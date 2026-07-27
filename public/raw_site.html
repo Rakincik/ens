@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Türkçe ÖABTdeyiz</title>
+<meta name="description" content="TÜRKÇE ÖABTDEYİZ UZAKTAN EĞİTİM PLATFORMU">
+<link rel="icon" type="image/png" href="">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />        <style>
+        /* --- Renk Tanımlamaları --- */
+        :root { --brand-color: #a97739; --brand-hover: #a97739; --green-price: #198754; }
+        .btn-primary { --bs-btn-bg: var(--brand-color); --bs-btn-border-color: var(--brand-color); --bs-btn-hover-bg: var(--brand-hover); --bs-btn-hover-border-color: var(--brand-hover); --bs-btn-active-bg: var(--brand-hover); }
+        .btn-outline-primary { --bs-btn-color: var(--brand-color); --bs-btn-border-color: var(--brand-color); --bs-btn-hover-bg: var(--brand-color); --bs-btn-hover-border-color: var(--brand-color); --bs-btn-active-bg: var(--brand-color); }
+        .text-primary { color: var(--brand-color) !important; }
+        .nav-link.active { color: var(--brand-color) !important; font-weight: 600; }
+
+
+
+
+        /* --- Mega Menu Genel Ayar --- */
+        .dropdown-mega { position: static; }
+
+        /* =========================================
+        MOBİL GÖRÜNÜM (991px ve altı)
+        ========================================= */
+        @media (max-width: 991px) {
+            /* 1. Dış Kutuyu Daraltma ve Transparan Yapma */
+            .dropdown-mega .dropdown-menu {
+                position: static !important;
+                width: 100%;
+                transform: none !important;
+                border: none;
+                padding: 0 !important;
+                margin-top: 0;
+                background-color: transparent;
+                box-shadow: none;
+            }
+
+            /* 2. HTML'deki "p-4" (büyük iç boşluk) class'ını mobilde zarifleştirme */
+            #megaMenuContainer .p-4 {
+                padding: 0.75rem 1rem !important;
+            }
+
+            /* 3. Kategoriler (Sol Alan) İnce Ayarları */
+            #megaMenuContainer .col-md-3 {
+                border-right: none !important; /* Mobilde dikey çizgiye gerek yok */
+                border-bottom: 1px solid #e9ecef; /* Kategoriler bitince ince bir ayraç */
+                background-color: transparent !important;
+            }
+
+            /* 4. Kategori Linklerini Mobilde Sıklaştırma */
+            #megaMenuCategories .mega-cat-link {
+                padding: 8px 12px;
+                font-size: 0.9rem; /* Yazıları mobilde bir tık küçülttük */
+                margin-bottom: 2px;
+                color:#ffbfbf !important;
+            }
+
+            /* 5. İçerik Alanı (Sağ Alan) Başlık ve Buton Boşlukları */
+            #megaMenuContainer .col-md-9 {
+                background-color: transparent !important;
+            }
+            
+            #megaMenuContainer .d-flex.justify-content-between {
+                margin-bottom: 0.75rem !important; /* "mb-4" olan alt boşluğu daralttık */
+                padding-bottom: 0.5rem !important;
+            }
+        }
+
+        /* =========================================
+        MASAÜSTÜ GÖRÜNÜM (992px)
+        ========================================= */
+        @media (min-width: 992px) {
+            .dropdown-mega .dropdown-menu { 
+                position: absolute; 
+                left: 50%; 
+                transform: translateX(-50%); 
+                width: 98%; 
+                max-width: 1320px; 
+                margin-top: 0; 
+                border: none;
+                border-top: 3px solid var(--brand-color);
+                border-radius: 0 0 20px 20px; 
+                box-shadow: 0 20px 50px rgba(0,0,0,0.15); 
+                padding: 1rem 0 !important;
+                background-color: #fff;
+            }
+        }
+/* Slider & Görseller */
+.student-img { width: 90px; height: 90px; object-fit: cover; border: 3px solid var(--brand-color); }
+.hero-img { width: 100%; height: 500px; object-fit: cover; }
+
+@media (max-width: 768px) { 
+    .hero-img { 
+        height: auto; 
+        aspect-ratio: 1920 / 500; /* 1920x500 oranını mobilde tam korur */
+    } 
+    .carousel-caption { bottom: 1rem; } 
+    .carousel-caption h2 { font-size: 1.5rem; } 
+    .carousel-caption p { font-size: 0.9rem; margin-bottom: 0.5rem; } 
+    .carousel-caption .btn { padding: 0.25rem 0.5rem; font-size: 0.8rem; } 
+}
+        
+        /* Animasyonlar */
+        .pulse-badge { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(191, 29, 48, 0.7); } 70% { box-shadow: 0 0 0 8px rgba(191, 29, 48, 0); } 100% { box-shadow: 0 0 0 0 rgba(191, 29, 48, 0); } }
+        .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; border-color: var(--brand-color)!important; }
+
+        /* CHATBOT CSS */
+        :root { --cb-primary: #a97739; --cb-bg: #f2f5f7; --cb-white: #ffffff; --cb-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+        .chat-launcher { position: fixed; bottom: 25px; right: 25px; width: 65px; height: 65px; background: var(--cb-primary); color: white; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 28px; z-index: 10000; box-shadow: 0 4px 15px rgba(191,29,48,0.5); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .chat-launcher:hover { transform: scale(1.1); }
+        .pulse { animation: pulse-animation 2s infinite; }
+        @keyframes pulse-animation { 0% { box-shadow: 0 0 0 0 rgba(191, 29, 48, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(191, 29, 48, 0); } 100% { box-shadow: 0 0 0 0 rgba(191, 29, 48, 0); } }
+        .chat-window { position: fixed; bottom: 100px; right: 25px; width: 370px; height: 550px; background: #fff; border-radius: 12px; box-shadow: var(--cb-shadow); display: none; flex-direction: column; overflow: hidden; z-index: 10000; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; border: 1px solid #e1e1e1; }
+        .chat-header { background: var(--cb-primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .chat-body { flex-grow: 1; background: var(--cb-bg); padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+        .chat-body::-webkit-scrollbar { width: 5px; }
+        .chat-body::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        .chat-footer { padding: 10px; background: #fff; border-top: 1px solid #eee; display: none; flex-shrink: 0; }
+        .msg { max-width: 85%; padding: 12px 15px; border-radius: 12px; font-size: 14px; line-height: 1.5; position: relative; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .msg-bot { background: var(--cb-white); color: #333; align-self: flex-start; border: 1px solid #e0e0e0; border-bottom-left-radius: 2px; }
+        .msg-user { background: var(--cb-primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .options-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; animation: fadeIn 0.5s; }
+        .btn-opt { background: #fff; border: 1px solid var(--cb-primary); color: var(--cb-primary); padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-opt:hover { background: var(--cb-primary); color: #fff; }
+        .chat-input-group { display: flex; gap: 5px; }
+        .chat-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none; }
+        .btn-send { width: 40px; height: 40px; background: var(--cb-primary); color: white; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .typing-indicator { font-size: 12px; color: #888; font-style: italic; margin-left: 5px; display: none; }
+        @media (max-width: 480px) { .chat-window { width: 92%; right: 4%; bottom: 100px; height: 60vh; } }
+
+        /* Navbar & Menu */
+        #mainNav ul{ gap: 10px; }
+        #mainNav .nav-item{ background-color: #f8f8f8; border-radius: 25px; padding-right: 15px; padding-left: 15px; transition: all 0.3s ease; }
+        #mainNav .nav-item:hover{ background-color: #be1e2d; }
+        #mainNav .nav-item:hover .nav-link { color: white !important; }
+        #megaMenuCategories .mega-cat-link { display: block; padding: 10px 15px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500; transition: all 0.2s ease; }
+        #megaMenuCategories .mega-cat-link:hover, #megaMenuCategories .mega-cat-link.active { color: #ffffff !important; background-color: var(--brand-color); padding-left: 20px; }
+
+        /* Cookie & Top Bar */
+        .cookie-consent-box { position: fixed; bottom: 30px; left: 30px; width: 100%; max-width: 400px; background: #fff; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); padding: 20px; z-index: 10000; display: none; border-left: 5px solid var(--brand-color); animation: slideUpCookie 0.5s ease-out; }
+        @keyframes slideUpCookie { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .cookie-icon { font-size: 2rem; color: var(--brand-color); margin-bottom: 10px; }
+        .cookie-text { font-size: 0.9rem; color: #555; margin-bottom: 15px; line-height: 1.5; }
+        .cookie-buttons { display: flex; gap: 10px; }
+        .btn-cookie-accept { flex: 1; background: var(--brand-color); color: white; border: none; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+        .btn-cookie-accept:hover { background: #a97739; color: white; }
+        .btn-cookie-settings { flex: 1; background: #f1f1f1; color: #333; border: none; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+        .btn-cookie-settings:hover { background: #e2e2e2; }
+        @media (max-width: 576px) { .cookie-consent-box { left: 0; bottom: 0; max-width: 100%; border-radius: 12px 12px 0 0; border-left: none; border-top: 5px solid var(--brand-color); } }
+        
+        
+
+
+
+
+
+
+
+
+.top-bar { 
+    background-color: #3b3939; 
+    color: #e0e0e0; 
+    font-size: 0.85rem; 
+    position: relative; 
+    z-index: 1031; 
+    overflow: hidden; /* Dışarı taşan yazıyı gizlemek için şart */
+}
+
+/* Mobil için Kayma Efekti */
+@media (max-width: 991px) {
+    .top-bar-marquee {
+        display: flex !important;
+        white-space: nowrap; /* Yazıyı tek satıra zorlar */
+        animation: marquee-scroll 15s linear infinite; /* 15 saniyede bir döner */
+        padding-left: 100%; /* Başlangıçta ekranın dışından gelmesi için */
+        width: max-content;
+    }
+
+    .top-bar .container {
+        overflow: hidden; /* Yazının container dışına taşan kısmını gizler */
+    }
+}
+
+/* Kayma Animasyonu Tanımı */
+@keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* Mevcut diğer kodlarınız */
+.top-bar a { color: #e0e0e0; text-decoration: none; transition: 0.3s; }
+.top-bar a:hover { color: var(--brand-color); }
+.dot-pulse { width: 8px; height: 8px; background-color: #ffc107; border-radius: 50%; display: inline-block; margin-right: 8px; animation: fade-pulse 1.5s infinite; }
+@keyframes fade-pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+
+
+
+
+
+
+</style>
+	 
+
+
+
+
+<style>
+    /* Sabit Buton Ayarları */
+    .whatsapp-float {
+        position: fixed;
+        width: 60px;
+        height: 60px;
+        bottom: 30px;  /* Alttan boşluk */
+        left: 30px;    /* Soldan boşluk */
+        background-color: #25d366;
+        color: #FFF;
+        border-radius: 50px;
+        text-align: center;
+        font-size: 30px;
+        box-shadow: 2px 2px 3px #999;
+        z-index: 10000; /* Diğer öğelerin üzerinde dursun */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        
+        /* Nabız Animasyonu */
+        animation: pulse-green 2s infinite;
+    }
+
+    /* İkon Ayarı */
+    .my-float {
+        margin-top: 2px; /* Dikey ortalama ince ayarı */
+    }
+
+    /* Hover (Üzerine gelince) Efekti */
+    .whatsapp-float:hover {
+        background-color: #20b858;
+        color: #fff;
+        transform: scale(1.1); /* Biraz büyüt */
+    }
+
+    /* Nabız Animasyonu Keyframes */
+    @keyframes pulse-green {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+        }
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+        }
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+        }
+    }
+</style>
+
+<style>
+/* --- Başarı Hikayeleri (Story) Tasarımı --- */
+.story-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.story-container:hover {
+    transform: scale(1.05); /* Üzerine gelince tatlı bir büyüme efekti */
+}
+
+.story-ring {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    /* Instagram benzeri renkli gradient arka plan */
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    padding: 3px; /* Renkli halka ile iç resim arasındaki mesafe */
+    margin-bottom: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.story-ring img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid #fff; /* Renkli halkanın içindeki beyaz kesinti */
+    object-fit: cover;
+    background-color: #fff;
+}
+
+.story-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* İsim uzunsa sonuna 3 nokta koyar */
+}
+
+
+
+
+
+
+
+/* Resim varken görünecek yeşil stroke */
+.story-ring-green {
+    padding: 3px;
+    background: #28a745; /* Canlı yeşil */
+    border-radius: 50%;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+.story-ring-green:hover {
+    transform: scale(1.08);
+}
+
+/* Resim yokken (stroke olmayacak) */
+.story-ring-none {
+    padding: 3px;
+    background: transparent;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Modal Çarpı Butonu - Resmin üzerine sabitleme */
+.btn-story-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1060;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+
+
+/* Yazı alanı yüksekliğini sabitle ve hoverda kaydır */
+.quote-container {
+    height: 40px; /* 2 satıra denk gelen yükseklik */
+    overflow: hidden;
+    position: relative;
+}
+
+.quote-scroll {
+    display: block;
+    transition: transform 1.5s ease-in-out; /* Kayma hızı */
+}
+
+/* Kartın üzerine gelindiğinde eğer yazı uzunsa yukarı kaydır */
+.card:hover .quote-scroll {
+    transform: translateY(calc(-100% + 40px));
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.ankara.okinar.com/assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+
+
+    <!--External Style -->
+        <!--External Style -->
+    </head>
+<body class="bg-light">
+    <div class="top-bar py-1">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 col-md-12 text-center text-lg-start">
+                <div class="top-bar-marquee d-inline-flex align-items-center">
+                    <span class="dot-pulse"></span>
+                    <span class="marquee-content">Türkiye'nin kendi alanında en büyük uzaktan eğitim platformuna hoş geldiniz...</span>
+                </div>
+            </div>
+            <div class="col-lg-4 d-none d-lg-flex justify-content-end gap-4">
+                <a href="tel:05435183666"><i class="fa-solid fa-phone me-1 "></i> 05435183666</a>
+                <div class="d-flex gap-3 border-start border-secondary ps-4">
+                    <a href="https://www.instagram.com/turkceoabtdeyiz/"><i class="fa-brands fa-instagram"></i></a>                    <a href="https://x.com/turkceoabtdeyiz"><i class="fa-brands fa-twitter"></i></a>                    <a href="https://www.youtube.com/channel/UCsbd5_F3dNn2--Vlpwl_4nQ"><i class="fa-brands fa-youtube"></i></a>                    <a href="https://www.facebook.com/groups/798609120494599/"><i class="fa-brands fa-facebook-f"></i></a>                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="https://turkceoabtdeyiz.com/">
+            <img src="https://turkceoabtdeyiz.com/assets/core/images/logo.png" alt="Türkçe ÖABTdeyiz" height="60">
+        </a>
+        
+        <!-- MOBİL GÖRÜNÜM: Sepet İkonu ve Hamburger Menü (Sadece mobilde görünür) -->
+        <div class="d-flex align-items-center gap-3 d-lg-none">
+            <a href="https://turkceoabtdeyiz.com/sepet" class="position-relative text-dark" title="Sepetim">
+                <i class="fa-solid fa-cart-shopping fs-5"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                    id="navCartCountMobile" 
+                    style="font-size: 0.6rem; display:none;">
+                    0                </span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 fw-medium">
+               
+                <li class="nav-item"><a class="nav-link" href="https://turkceoabtdeyiz.com/hakkimizda">Hakkımızda</a></li>
+                
+                <li class="nav-item dropdown dropdown-mega">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Eğitimler</a>
+                    <div class="dropdown-menu border-0 p-0">
+                        <div class="row g-0" id="megaMenuContainer">
+                            
+                            <div class="col-md-3 bg-light border-end">
+                                <div class="p-4">
+                                    <h6 class="fw-bold text-muted text-uppercase small mb-3">Kategoriler</h6>
+                                    <div id="megaMenuCategories" class="d-flex flex-column gap-1">
+                                        <div class="text-center py-3"><i class="fas fa-spinner fa-spin text-primary"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-9 bg-white">
+                                <div class="p-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                                        <h6 class="fw-bold mb-0 text-primary" id="megaMenuTitle">Tüm Eğitimler</h6>
+                                        <a href="#coursesSection" class="btn btn-sm btn-light text-primary fw-bold px-3 rounded-pill" style="font-size: 0.8rem;">
+                                            Tümünü İncele <i class="fas fa-arrow-right ms-1"></i>
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="row g-3" id="megaMenuContent"></div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </li>
+                
+                <li class="nav-item"><a class="nav-link" href="https://turkceoabtdeyiz.com/yayinlar">Yayınlar</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://turkceoabtdeyiz.com/kadromuz">Kadromuz</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://turkceoabtdeyiz.com/iletisim">İletişim</a></li>
+            </ul>
+            
+            <div class="d-flex align-items-center mt-3 mt-lg-0">
+
+                <a href="https://turkceoabtdeyiz.okinar.com" class="position-relative me-4 btn btn-success text-white" title="Ders Paneli">
+                    Ders Paneli
+                </a>
+
+                <!-- MASAÜSTÜ GÖRÜNÜM: Sepet İkonu (Mobilde gizlenir) -->
+                <a href="https://turkceoabtdeyiz.com/sepet" class="position-relative text-dark me-4 d-none d-lg-inline-block" title="Sepetim">
+                    <i class="fa-solid fa-cart-shopping fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                        id="navCartCount" 
+                        style="font-size: 0.6rem; display:none;">
+                        0                    </span>
+                </a>
+
+                                    
+                    <div class="d-flex gap-2">
+                        <a href="https://turkceoabtdeyiz.com/giris-yap" class="btn btn-outline-primary btn-sm rounded-1 px-3">Giriş Yap</a>
+                        <a href="https://turkceoabtdeyiz.com/kayit-ol" class="btn btn-primary btn-sm rounded-1 px-3">Kayıt Ol</a>
+                    </div>
+                            </div>
+        </div>
+    </div>
+</nav>    <!-- CONTENT -->
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" class=""></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" class=""></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" class=""></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="4" class=""></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="5" class=""></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="6" class=""></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="7" class=""></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="8" class=""></button>
+            </div>
+    <div class="carousel-inner">
+
+        <div class="carousel-item active">
+        <img src="https://turkceoabtdeyiz.com/uploads/sliders/8422e8e1f798ffe30a336c97327d6655.png" class="d-block w-100 hero-img" alt="">
+        <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-4 fw-bold"></h2>
+            <p class="lead"></p>
+        </div>
+    </div>
+        <div class="carousel-item ">
+        <img src="https://turkceoabtdeyiz.com/uploads/sliders/a1235f1430ff234ef2b1dfcb729b7146.png" class="d-block w-100 hero-img" alt="">
+        <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-4 fw-bold"></h2>
+            <p class="lead"></p>
+        </div>
+    </div>
+        <div class="carousel-item ">
+        <img src="https://turkceoabtdeyiz.com/uploads/sliders/ccaebaaaabe5cbb997963852fce6fd7f.png" class="d-block w-100 hero-img" alt="">
+        <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-4 fw-bold"></h2>
+            <p class="lead"></p>
+        </div>
+    </div>
+        <div class="carousel-item ">
+        <img src="https://turkceoabtdeyiz.com/uploads/sliders/2486f6e75dacfc5834ae218b8a6f986f.png" class="d-block w-100 hero-img" alt="">
+        <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-4 fw-bold"></h2>
+            <p class="lead"></p>
+        </div>
+    </div>
+        <div class="carousel-item ">
+        <img src="https://turkceoabtdeyiz.com/uploads/sliders/122ab24a63b3fb1f3785ff5abb85440c.png" class="d-block w-100 hero-img" alt="">
+        <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-4 fw-bold"></h2>
+            <p class="lead"></p>
+        </div>
+    </div>
+        <div class="carousel-item ">
+        <img src="https://turkceoabtdeyiz.com/uploads/sliders/a09f11c62863129c62230ba8d49266ef.png" class="d-block w-100 hero-img" alt="">
+        <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-4 fw-bold"></h2>
+            <p class="lead"></p>
+        </div>
+    </div>
+        <div class="carousel-item ">
+        <img src="https://turkceoabtdeyiz.com/uploads/sliders/27db409537711f7339dac36614a1e439.png" class="d-block w-100 hero-img" alt="">
+        <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-4 fw-bold"></h2>
+            <p class="lead"></p>
+        </div>
+    </div>
+        <div class="carousel-item ">
+        <img src="https://turkceoabtdeyiz.com/uploads/sliders/57246896b08822f30969fe1ba72867e8.png" class="d-block w-100 hero-img" alt="">
+        <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-4 fw-bold"></h2>
+            <p class="lead"></p>
+        </div>
+    </div>
+        <div class="carousel-item ">
+        <img src="https://turkceoabtdeyiz.com/uploads/sliders/c431179106e6b4a25e35c753f0d4e39e.png" class="d-block w-100 hero-img" alt="">
+        <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-4 fw-bold"></h2>
+            <p class="lead"></p>
+        </div>
+    </div>
+    
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+</div>
+
+<!-- Başarı Hikayeleri -->
+<section class="container my-5">
+    <div class="text-center mb-5">
+        <h3 class="fw-bold"><i class="fa-solid fa-trophy text-warning me-2"></i>Başarı Hikayeleri</h3>
+        <div class="mx-auto rounded" style="width: 60px; height: 4px; background-color: var(--brand-color);"></div>
+    </div>
+    
+    <div class="swiper mySwiper pb-5">
+        <div class="swiper-wrapper" id="winnersWrapper">
+            </div>
+        <div class="swiper-pagination"></div>
+    </div>
+</section>
+
+<div class="modal fade" id="storyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body text-center p-0 position-relative">
+                <!--<button type="button" class="btn-close btn-story-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+                
+                <img src="" id="storyModalImage" class="img-fluid rounded shadow-lg" 
+                     style="max-height: 85vh; border: 4px solid #fff; display: block; margin: auto;" alt="Başarı Hikayesi">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Eğitim Paketleri -->
+<div class="container mb-5" id="coursesSection">
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 90px; z-index: 10;">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="fa-solid fa-filter text-primary me-2"></i> Filtrele
+                </div>
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                        <input type="text" id="searchInput" class="form-control bg-light border-start-0" placeholder="Paket ara...">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="fw-bold small text-uppercase text-muted">Kategoriler</h6>
+<div class="form-check">
+    <input class="form-check-input cat-filter" type="checkbox" value="12" id="cat12">
+    <label class="form-check-label" for="cat12">CANLI DERSLER</label>
+</div>
+<div class="form-check">
+    <input class="form-check-input cat-filter" type="checkbox" value="13" id="cat13">
+    <label class="form-check-label" for="cat13">VİDEO DERSLER</label>
+</div>
+<div class="form-check">
+    <input class="form-check-input cat-filter" type="checkbox" value="14" id="cat14">
+    <label class="form-check-label" for="cat14">GENEL TEKRAR</label>
+</div>
+<div class="form-check">
+    <input class="form-check-input cat-filter" type="checkbox" value="15" id="cat15">
+    <label class="form-check-label" for="cat15">ONLİNE DENEME</label>
+</div>
+                    </div>
+
+                    <div class="mb-3">
+                          </div>
+
+                    <button id="clearFilters" class="btn btn-light w-100 btn-sm text-muted">Temizle</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-3 bg-white p-2 rounded shadow-sm border">
+                <span class="fw-bold px-2">Eğitim Paketleri <span class="text-muted fw-normal" id="resultCount"></span></span>
+                <select id="sortSelect" class="form-select form-select-sm w-auto border-0 bg-light">
+                    <option value="default">Sıralama: Önerilen</option>
+                    <option value="price-asc">Fiyat: Artan</option>
+                    <option value="price-desc">Fiyat: Azalan</option>
+                </select>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" id="courseGrid"></div>
+            
+            <div id="noResults" class="text-center py-5 d-none">
+                <i class="fa-solid fa-box-open fa-3x text-muted opacity-25 mb-3"></i>
+                <h5 class="text-muted">Paket bulunamadı.</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    <!--/CONTENT-->
+    <footer class="bg-dark text-light py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <h5 class="fw-bold text-white mb-3">Türkçe ÖABTdeyiz</h5>
+                <p class="text-secondary small">TÜRKÇE ÖABTDEYİZ UZAKTAN EĞİTİM PLATFORMU</p>
+            </div>
+            <div class="col-lg-2 col-6">
+                <h6 class="fw-bold text-white mb-3">Kurumsal</h6>
+                <ul class="list-unstyled small">
+                    <li><a href="https://turkceoabtdeyiz.com/hakkimizda" class="text-secondary text-decoration-none">Hakkımızda</a></li>
+                    <li><a href="https://turkceoabtdeyiz.com/kadromuz" class="text-secondary text-decoration-none">Kadromuz</a></li>
+                    <li><a href="https://turkceoabtdeyiz.com/iletisim" class="text-secondary text-decoration-none">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-6">
+                <h6 class="fw-bold text-white mb-3">Sözleşmeler</h6>
+                <ul class="list-unstyled small">
+                    <li><a href="https://turkceoabtdeyiz.com/kullanici-sozlesmesi" class="text-secondary text-decoration-none">Kullanıcı Sözleşmesi</a></li>
+                    <li><a href="https://turkceoabtdeyiz.com/gizlilik-politikasi" class="text-secondary text-decoration-none">Gizlilik Politikası</a></li>
+                    <li><a href="https://turkceoabtdeyiz.com/mesafeli-satis-sozlesmesi" class="text-secondary text-decoration-none">Mesafeli Satış Sözleşmesi</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3">
+                <h6 class="fw-bold text-white mb-3">İletişim</h6>
+                <ul class="list-unstyled small text-secondary">
+                    <li class="mb-1"><i class="fa-solid fa-phone me-2"></i> 05435183666</li>
+                    <li class="mb-1"><i class="fa-solid fa-envelope me-2"></i> turkceoabtdeyiz@gmail.com</li>
+                </ul>
+                <div class="d-flex gap-3 mt-3">
+                                            <a href="https://www.instagram.com/turkceoabtdeyiz/" target="_blank" class="text-secondary fs-5 me-2">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                    
+                                            <a href="https://x.com/turkceoabtdeyiz" target="_blank" class="text-secondary fs-5 me-2">
+                            <i class="fa-brands fa-twitter"></i>
+                        </a>
+                    
+                                            <a href="https://www.youtube.com/channel/UCsbd5_F3dNn2--Vlpwl_4nQ" target="_blank" class="text-secondary fs-5 me-2">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                    
+                                    </div>
+            </div>
+        </div>
+        <hr class="border-secondary my-4">
+        <div class="text-center small text-secondary">
+            &copy; 2026 Türkçe ÖABTdeyiz. Tüm hakları saklıdır.
+        </div>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+<!-- Whatsapp -->
+    <a href="https://wa.me/9005377432448?text=Merhaba,%20egitim%20paketleri%20hakkinda%20bilgi%20almak%20istiyorum." 
+       class="whatsapp-float" 
+       target="_blank" 
+       rel="noopener noreferrer">
+        <i class="fa-brands fa-whatsapp my-float"></i>
+    </a>
+
+
+
+
+
+<!-- Chat -->
+<button class="chat-launcher pulse" id="btnLauncher"><i class="fa-solid fa-robot"></i></button>
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <div class="d-flex align-items-center"><i class="fa-solid fa-robot me-2"></i><span class="fw-bold">Robot</span></div>
+        <div style="cursor: pointer;" id="btnReset" title="Sohbeti Sıfırla"><i class="fa-solid fa-rotate-right"></i></div>
+    </div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-footer" id="chatFooter">
+        <div class="chat-input-group">
+            <input type="text" id="userInput" class="chat-input" placeholder="Telefon numaranız...">
+            <button class="btn-send" id="btnSend"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Cookie Consent -->
+<div class="cookie-consent-box" id="cookieBox">
+    <div class="d-flex align-items-center mb-2"><i class="fa-solid fa-cookie-bite cookie-icon me-2"></i><h6 class="fw-bold mb-0">Çerez Politikası</h6></div>
+    <p class="cookie-text">Sizlere daha iyi hizmet sunabilmek, site trafiğini analiz etmek ve kişiselleştirilmiş içerik sağlamak için çerezleri kullanıyoruz.</p>
+    <div class="cookie-buttons">
+        <button class="btn-cookie-settings" data-bs-toggle="modal" data-bs-target="#cookieModal">Tercihler</button>
+        <button class="btn-cookie-accept" id="acceptCookies">Kabul Et</button>
+    </div>
+</div>
+
+<div class="modal fade" id="cookieModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-shield-halved text-primary me-2"></i>Çerez Tercihleri</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-muted">Web sitemizde kullanılan çerezler hakkında detaylı bilgi aşağıdadır. Zorunlu çerezler sitenin çalışması için gereklidir.</p>
+                <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded">
+                    <div><h6 class="fw-bold mb-1">Zorunlu Çerezler</h6><small class="text-muted" style="font-size: 11px;">Site güvenliği ve fonksiyonları için şarttır.</small></div>
+                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" checked disabled></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                    <div><h6 class="fw-bold mb-1">Analiz ve Performans</h6><small class="text-muted" style="font-size: 11px;">Ziyaretçi sayısını takip etmemizi sağlar.</small></div>
+                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="analyticsCookies" checked></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                    <div><h6 class="fw-bold mb-1">Pazarlama</h6><small class="text-muted" style="font-size: 11px;">İlgi alanınıza göre reklamlar sunar.</small></div>
+                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="marketingCookies"></div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-primary w-100 rounded-2" id="saveCookieSettings">Seçimleri Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>    
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.ankara.okinar.com/assets/plugins/sweetalert2/sweetalert2.min.js"></script>
+  
+
+
+
+<script>
+$(document).ready(function() {
+    const TITLE ="Türkçe ÖABTdeyiz"; 
+    const PHONE ="05435183666"; 
+    const EMAIL ="turkceoabtdeyiz@gmail.com"; 
+  
+    /* --- 1. CHAT VERİTABANI (JSON) --- */
+    const chatData = {
+        "start": {
+            msg: "Merhaba! 👋 "+TITLE+"'ya hoş geldiniz. Size nasıl yardımcı olabilirim?",
+            options: [
+                { text: "📚 Eğitim Paketleri", next: "paketler" },
+                { text: "💰 Fiyat Bilgisi", next: "fiyat" },
+                { text: "📞 Sizi Arayalım", next: "talep" },
+                { text: "📍 İletişim", next: "iletisim" }
+            ]
+        },
+        "paketler": {
+            msg: "Hangi sınav türüyle ilgileniyorsunuz?",
+            options: [
+                { text: "ÖABT Paketleri", next: "act_oabt" },
+                { text: "AGS (Akademi)", next: "act_ags" },
+                { text: "↩️ Başa Dön", next: "start" }
+            ]
+        },
+        "act_oabt": {
+            msg: "ÖABT paketlerini filtreledim. Aşağıda inceleyebilirsiniz.",
+            action: "filter_oabt", // JS Fonksiyonu Tetikler
+            options: [
+                { text: "AGS Paketlerine Bak", next: "act_ags" },
+                { text: "↩️ Başa Dön", next: "start" }
+            ]
+        },
+        "act_ags": {
+            msg: "AGS (Akademi) paketlerini filtreledim.",
+            action: "filter_ags",
+            options: [
+                { text: "ÖABT Paketlerine Bak", next: "act_oabt" },
+                { text: "↩️ Başa Dön", next: "start" }
+            ]
+        },
+        "fiyat": {
+            msg: "Paket fiyatlarımız 5.500₺ ile 14.000₺ arasında değişmektedir. Detaylar için paketleri inceleyebilirsiniz.",
+            options: [
+                { text: "Paketleri Göster", next: "act_all" },
+                { text: "📞 Sizi Arayalım", next: "talep" },
+                { text: "↩️ Başa Dön", next: "start" }
+            ]
+        },
+        "act_all": {
+            msg: "Tüm eğitim paketleri listelenmiştir.",
+            action: "filter_all",
+            options: [{ text: "↩️ Başa Dön", next: "start" }]
+        },
+        "iletisim": {
+            msg: "Bize ulaşın:<br>📞 "+PHONE+"<br>📧 "+EMAIL,
+            options: [{ text: "↩️ Başa Dön", next: "start" }]
+        },
+        "talep": {
+            msg: "Lütfen size ulaşabileceğimiz bir telefon numarası giriniz.",
+            input: true, // Footer Input Alanını Açar
+            inputType: "phone",
+            next: "talep_son"
+        },
+        "talep_son": {
+            msg: "Teşekkürler! ✅ Bilgileriniz alındı. Eğitim danışmanlarımız en kısa sürede sizi arayacaktır.",
+            options: [{ text: "↩️ Sohbeti Başa Sar", next: "start" }]
+        }
+    };
+
+    /* --- 2. DEĞİŞKENLER --- */
+    let currentNode = null;
+    const $window = $('#chatWindow');
+    const $body = $('#chatBody');
+    const $footer = $('#chatFooter');
+    const $input = $('#userInput');
+
+    /* --- 3. OLAY DİNLEYİCİLERİ --- */
+
+    // Aç / Kapa
+    $('#btnLauncher').click(function() {
+        // Eğer kapalıysa aç
+        if ($window.is(':hidden')) {
+            $window.fadeIn().css('display', 'flex'); // Flex yapısını koru
+            if ($body.children().length === 0) {
+                loadNode('start');
+            }
+            scrollToBottom();
+        } else {
+            $window.fadeOut();
+        }
+    });
+
+    // Reset Butonu
+    $('#btnReset').click(function() {
+        $(this).find('i').addClass('fa-spin');
+        setTimeout(() => {
+            $(this).find('i').removeClass('fa-spin');
+            $body.empty();
+            loadNode('start');
+        }, 500);
+    });
+
+    // Seçenek Butonuna Tıklama (Event Delegation)
+    $(document).on('click', '.btn-opt', function() {
+        let next = $(this).data('next');
+        let text = $(this).text();
+
+        // Butonları gizle (Temiz görünüm)
+        $(this).parent().remove();
+
+        addMessage('user', text);
+        showTyping();
+
+        setTimeout(() => {
+            hideTyping();
+            loadNode(next);
+        }, 600);
+    });
+
+    // Input Gönderme
+    $('#btnSend').click(handleInputSubmit);
+    $input.keypress(function(e) { if(e.which === 13) handleInputSubmit(); });
+
+
+    /* --- 4. MOTOR (CORE) --- */
+
+    function loadNode(nodeId) {
+        const node = chatData[nodeId];
+        if(!node) return;
+        currentNode = node; // Durumu kaydet
+
+        // 1. Mesajı Yaz
+        addMessage('bot', node.msg);
+
+        // 2. Aksiyon varsa çalıştır
+        if(node.action) {
+            runSiteAction(node.action);
+        }
+
+        // 3. Input mu Buton mu?
+        if(node.input) {
+            $footer.slideDown();
+            $input.focus();
+            scrollToBottom();
+        } else {
+            $footer.hide();
+            if(node.options) {
+                addOptions(node.options);
+            }
+        }
+    }
+
+    function handleInputSubmit() {
+        let val = $input.val().trim();
+        if(val === '') return;
+
+        // Basit telefon kontrolü
+        if(currentNode.inputType === 'phone' && val.length < 10) {
+            alert("Lütfen geçerli bir numara giriniz.");
+            return;
+        }
+
+        addMessage('user', val);
+        $input.val('');
+        $footer.slideUp();
+        
+        showTyping();
+        setTimeout(() => {
+            hideTyping();
+            loadNode(currentNode.next);
+        }, 800);
+    }
+
+    /* --- 5. YARDIMCI FONKSİYONLAR --- */
+
+    function addMessage(sender, text) {
+        let cls = sender === 'bot' ? 'msg-bot' : 'msg-user';
+        $body.append(`<div class="msg ${cls}">${text}</div>`);
+        scrollToBottom();
+    }
+
+    function addOptions(opts) {
+        let html = '<div class="options-grid">';
+        opts.forEach(o => {
+            html += `<button class="btn-opt" data-next="${o.next}">${o.text}</button>`;
+        });
+        html += '</div>';
+        $body.append(html);
+        scrollToBottom();
+    }
+
+    function showTyping() {
+        $body.append(`<div class="typing-indicator" id="typing">Yazıyor...</div>`);
+        scrollToBottom();
+    }
+    function hideTyping() { $('#typing').remove(); }
+
+    // GARANTİLİ SCROLL (EN ÖNEMLİ KISIM)
+    function scrollToBottom() {
+        let chatDiv = document.getElementById("chatBody");
+        // DOM güncellemesi için milisaniyelik gecikme
+        setTimeout(() => {
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        }, 50);
+    }
+
+    /* --- 6. SİTE ENTEGRASYONU --- */
+    function runSiteAction(act) {
+        if(act === 'filter_oabt') {
+            $('.cat-filter').prop('checked', false);
+            $('#catOABT').prop('checked', true).trigger('change');
+            $('html, body').animate({ scrollTop: $("#coursesSection").offset().top - 100 }, 800);
+        }
+        else if(act === 'filter_ags') {
+            $('.cat-filter').prop('checked', false);
+            $('#catAGS').prop('checked', true).trigger('change');
+            $('html, body').animate({ scrollTop: $("#coursesSection").offset().top - 100 }, 800);
+        }
+        else if(act === 'filter_all') {
+            $('#clearFilters').click();
+            $('html, body').animate({ scrollTop: $("#coursesSection").offset().top - 100 }, 800);
+        }
+    }
+});
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+<script>
+// --- ÇEREZ YÖNETİMİ ---
+    $(document).ready(function() {
+        // 1. Daha önce kabul edildi mi kontrol et
+        if (!localStorage.getItem('cookieConsent')) {
+            setTimeout(function() {
+                $('#cookieBox').fadeIn();
+            }, 1000);
+        }
+
+        $('#acceptCookies').click(function() {
+            setCookieConsent('full');
+        });
+
+        $('#saveCookieSettings').click(function() {
+            // İsteğe bağlı: Checkbox durumlarını da kaydedebilirsin
+            setCookieConsent('custom');
+            $('#cookieModal').modal('hide');
+        });
+
+        function setCookieConsent(type) {
+            localStorage.setItem('cookieConsent', type); // Tarayıcıya kaydet
+            $('#cookieBox').fadeOut(); // Kutuyu gizle
+            
+        }
+    });
+</script>
+
+
+ <script>
+    var BASE_URL = "https://turkceoabtdeyiz.com/";
+    let globalCoursesForMenu = [];
+
+    $(document).ready(function() {
+        // Sayfa yüklendiğinde Mega Menü için verileri çek
+        initMegaMenuData();
+    });
+
+    function initMegaMenuData() {
+        $.ajax({
+            url: BASE_URL + 'frontend/fetch_courses',
+            type: 'POST',
+            dataType: 'json',
+            success: function(data) {
+                globalCoursesForMenu = data;
+                buildMegaMenu(data);
+            },
+            error: function() {
+                $('#megaMenuCategories').html('<span class="text-danger small">Yüklenemedi.</span>');
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+function buildMegaMenu(courses) {
+        let catMap = new Map();
+        
+        courses.forEach(c => {
+            // 1. Kural: Kategori adı geçerli mi kontrol et
+            let isValidName = c.category_name && c.category_name !== "null" && c.category_name.trim() !== "";
+            
+            // 2. Kural: Geçerli ad yoksa ismini 'Genel / Diğer' yap, ID'sini zorla '0' yap!
+            let catName = isValidName ? c.category_name : 'Genel / Diğer';
+            let catId = (catName === 'Genel / Diğer') ? '0' : String(c.category_id);
+            
+            // Map'e ekle (ID '0' olanlar sadece 1 kez eklenecek)
+            if(!catMap.has(catId)) {
+                catMap.set(catId, catName);
+            }
+        });
+
+        let catContainer = $('#megaMenuCategories');
+        catContainer.empty(); 
+
+        // Tüm Eğitimler sekmesi
+        catContainer.append(`<a href="#" class="mega-cat-link active" data-cat="all">Tüm Eğitimler</a>`);
+
+        // Diğer kategorileri ekle
+        catMap.forEach((name, id) => {
+            catContainer.append(`<a href="#" class="mega-cat-link" data-cat="${id}">${name}</a>`);
+        });
+
+        // Başlangıç durumu
+        updateMegaMenuContent('all');
+
+        // Hover/Click olayları (off() ile eski olayları temizleyip üst üste binmesini engelliyoruz)
+        $('.mega-cat-link').off('mouseenter click').on('mouseenter click', function(e) {
+            e.preventDefault();
+            $('.mega-cat-link').removeClass('active');
+            $(this).addClass('active');
+            
+            let selectedCat = $(this).data('cat');
+            $('#megaMenuTitle').text($(this).text()); 
+            updateMegaMenuContent(selectedCat);
+        });
+    }
+
+    function updateMegaMenuContent(selectedCatId) {
+        let container = $('#megaMenuContent');
+        container.empty();
+
+        // Kategoriye göre filtrele
+        let filtered = globalCoursesForMenu;
+        if (selectedCatId !== 'all') {
+            filtered = globalCoursesForMenu.filter(c => {
+                // Filtrelerken de aynı mantık: İsim geçersizse ID'yi '0' kabul et
+                let isValidName = c.category_name && c.category_name !== "null" && c.category_name.trim() !== "";
+                let currentCatId = isValidName ? String(c.category_id) : '0';
+                
+                return currentCatId === String(selectedCatId);
+            });
+        }
+
+        // Mega menüde çok yer kaplamaması için ilk 4 ürünü alıyoruz
+        let displayItems = filtered.slice(0, 4);
+
+        if(displayItems.length === 0) {
+            container.html('<div class="col-12 text-muted small p-3">Bu kategoride şu an paket bulunmamaktadır.</div>');
+            return;
+        }
+
+        const formatPrice = (price) => new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(price);
+
+        displayItems.forEach(c => {
+            let imgUrl = c.image ? BASE_URL + c.image : `https://ui-avatars.com/api/?name=${encodeURIComponent(c.title)}&background=random&color=fff`;
+
+            let html = `
+                <div class="col-lg-6 mb-2 fade-in">
+                    <a href="${BASE_URL}urun/${c.slug}" class="text-decoration-none text-dark d-flex align-items-center p-2 rounded border h-100 bg-white shadow-sm mega-card-hover" style="transition: all 0.3s;">
+                        <img src="${imgUrl}" class="rounded me-3 shadow-sm" width="60" height="60" style="object-fit:cover;">
+                        <div>
+                            <h6 class="mb-1 small fw-bold text-truncate" style="max-width:200px;" title="${c.title}">${c.title}</h6>
+                            <span class="text-success small fw-bold">${formatPrice(c.price)}</span>
+                        </div>
+                    </a>
+                </div>
+            `;
+            container.append(html);
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+<!-- Page Script -->
+
+
+
+
+
+
+
+
+
+
+
+<script>
+ 
+
+$(document).ready(function() {
+        // Sayfa açıldığında ürünleri çek
+        fetchProducts();
+
+        // Event Listeners (Otomatik Tetikleme - format-filter silindi)
+        $('#searchInput').on('input', debounce(fetchProducts, 500));
+        $('.cat-filter, #sortSelect').on('change', fetchProducts);
+        
+        $('#clearFilters').click(function() {
+            $('#searchInput').val('');
+            $('.cat-filter').prop('checked', false);
+            $('#sortSelect').val('default');
+            fetchProducts();
+        });
+    });
+
+    // --- AJAX İLE ÜRÜNLERİ ÇEK ---
+    function fetchProducts() {
+        let search = $('#searchInput').val();
+        let sort = $('#sortSelect').val();
+        
+        let categories = [];
+        $('.cat-filter:checked').each(function() { categories.push($(this).val()); });
+
+        // Yükleniyor animasyonu
+        $('#courseGrid').html('<div class="col-12 text-center py-5"><i class="fas fa-spinner fa-spin fa-2x text-primary"></i></div>');
+
+        // Sunucuya İstek At
+        $.ajax({
+            url: BASE_URL + 'frontend/fetch_courses',
+            type: 'POST',
+            data: {
+                search: search,
+                categories: categories,
+                // formats array'i tamamen kaldırıldı
+                sort: sort
+            },
+            dataType: 'json',
+            success: function(data) {
+                displayCourses(data);
+            },
+            error: function() {
+                $('#courseGrid').html('<div class="col-12 text-center text-danger">Veriler yüklenirken hata oluştu.</div>');
+            }
+        });
+    }
+
+    // --- EKRANA BASMA ---
+    function displayCourses(data) {
+        let container = $('#courseGrid');
+        container.empty();
+        $('#resultCount').text(`(${data.length})`);
+
+        if (data.length === 0) {
+            $('#noResults').removeClass('d-none');
+            return;
+        } else {
+            $('#noResults').addClass('d-none');
+        }
+
+        const formatPrice = (price) => new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(price);
+
+        data.forEach(course => {
+            let imgUrl = course.image ? BASE_URL + course.image : 'https://via.placeholder.com/500x300?text=Resim+Yok';
+
+            let tagsHtml = '';
+
+            // HATA ÇÖZÜMÜ: Eğer course.tags null DEĞİLSE ve bir string ise işlem yap
+            if (course.tags && typeof course.tags === 'string') {
+                let tagsLower = course.tags.toLowerCase(); // Bir kere küçük harfe çevir
+
+                if(tagsLower.includes('canlı')) {
+                    tagsHtml += `<span class="badge bg-danger pulse-badge me-1">Canlı</span>`;
+                }
+                if(tagsLower.includes('video')) {
+                    tagsHtml += `<span class="badge bg-primary me-1">Video</span>`;
+                }
+                if(tagsLower.includes('sınav')) {
+                    tagsHtml += `<span class="badge bg-success me-1">Sınav</span>`;
+                }
+                if(tagsLower.includes('kitap')) {
+                    tagsHtml += `<span class="badge bg-warning me-1">Kitap</span>`;
+                }
+            }
+
+            if(course.is_featured == 1) {
+                tagsHtml += `<span class="badge bg-warning text-dark me-1">Fırsat</span>`;
+            }
+
+            let priceHtml = '';
+            if(parseFloat(course.old_price) > 0) {
+                 priceHtml = `<span class="text-muted text-decoration-line-through small me-2">${formatPrice(course.old_price)}</span>
+                              <span class="fs-5 fw-bold text-success">${formatPrice(course.price)}</span>`;
+            } else {
+                 priceHtml = `<span class="fs-5 fw-bold text-success">${formatPrice(course.price)}</span>`;
+            }
+
+            let isSoldOut = (course.stock <= 0); 
+
+            let cardStyle = isSoldOut ? 'filter: grayscale(100%); opacity: 0.6; pointer-events: none;' : '';
+
+            if (isSoldOut) {
+                tagsHtml += `<span class="badge bg-dark text-white me-1">Tükendi</span>`;
+            }
+
+            let buttonsHtml = '';
+            if (isSoldOut) {
+                buttonsHtml = `
+                    <button class="btn btn-secondary w-100 btn-sm rounded-1 disabled" type="button">Tükendi</button>
+                `;
+            } else {
+                if(course.payment_url==''){
+                    buttonsHtml = `
+                        <a href="${BASE_URL}urun/${course.slug}" class="btn btn-outline-primary w-50 btn-sm rounded-1">İncele</a>
+                        <button class="btn btn-primary w-50 btn-sm rounded-1" onclick="addToCart(${course.id})"><i class="fa-solid fa-cart-plus"></i> Ekle</button>
+                    `;
+                }else{
+                    buttonsHtml = `
+                        <a href="${BASE_URL}urun/${course.slug}" class="btn btn-outline-primary w-50 btn-sm rounded-1">İncele</a>
+                        <a href="${course.payment_url}" class="btn btn-outline-primary w-50 btn-sm rounded-1"> Hemen Al</a>
+                    `;
+                }
+
+
+            }
+
+            let html = `
+                <div class="col fade-in">
+                    <div class="card h-100 border hover-lift shadow-sm" style="${cardStyle}">
+                        <div class="position-relative">
+                            <img src="${imgUrl}" class="card-img-top" alt="${course.title}" style="object-fit:cover;">
+                            <div class="position-absolute top-0 end-0 p-2">${tagsHtml}</div>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title fw-bold text-dark" style="min-height:40px;">${course.title}</h6>
+                            <p class="small text-muted mb-2 text-truncate">${course.short_description || ''}</p>
+                            <div class="mt-auto pt-3">
+                                <div class="mb-3">${priceHtml}</div>
+                                <div class="d-flex gap-2">
+                                    ${buttonsHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.append(html);
+        });
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function() {
+            const context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+</script>
+
+
+
+
+
+    
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+function loadWinners() {
+    $.getJSON('https://turkceoabtdeyiz.com/stories/get_public_stories', function(data) {
+        let wrapper = $('#winnersWrapper');
+        let html = '';
+
+        $.each(data, function(index, student) {
+            // Profil resmi veya fallback
+            let imgSrc = student.img ? student.img : `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=random&color=fff`;
+            
+            // KOŞULLAR: Resim var mı?
+            let hasImage = student.img && student.img !== ""; 
+            
+            // Resim varsa yeşil stroke sınıfı ve onclick ekle, yoksa boş bırak
+            let ringClass = hasImage ? 'story-ring-green' : 'story-ring-none';
+            let clickAction = hasImage ? `onclick="openStoryModal('${student.img}')"` : '';
+            let cursorStyle = hasImage ? 'cursor:pointer;' : 'cursor:default;';
+
+            html += `
+            <div class="swiper-slide p-2">
+                <div class="card border-0 shadow-sm text-start" style="border-radius: 12px; overflow: hidden;">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="${ringClass}" ${clickAction} style="${cursorStyle}">
+                                <div class="story-ring-inner">
+                                    <img src="${imgSrc}" class="rounded-circle shadow-sm" style="width: 55px; height: 55px; object-fit: cover; border: 3px solid #fff;">
+                                </div>
+                            </div>
+                            
+                            <div class="ms-3">
+                                <h6 class="card-title fw-bold mb-0" style="font-size: 0.9rem;">${student.name}</h6>
+                                <div class="d-flex align-items-center mt-1">
+                                    <small class="text-muted me-2" style="font-size: 0.75rem;">${student.exam}</small>
+                                    <span class="badge ${student.badgeColor}" style="font-size: 0.65rem; padding: 0.3em 0.5em;">${student.rank}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quote-container mt-2">
+                            <p class="card-text text-muted mb-0 quote-scroll" style="font-size: 0.8rem; font-style: italic;">
+                                "${student.quote}"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        });
+
+        wrapper.html(html);
+        initSwiper();
+    });
+}
+
+    // Modal Açma Fonksiyonu
+    function openStoryModal(imageSrc) {
+        $('#storyModalImage').attr('src', imageSrc);
+        var myStoryModal = new bootstrap.Modal(document.getElementById('storyModal'));
+        myStoryModal.show();
+    }
+    // Swiper Başlatıcı
+    function initSwiper() {
+        new Swiper(".mySwiper", {
+            slidesPerView: 1, 
+            spaceBetween: 20,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: { el: ".swiper-pagination", clickable: true },
+            breakpoints: { 
+                640: { slidesPerView: 2 }, 
+                768: { slidesPerView: 3 }, 
+                1024: { slidesPerView: 4 } 
+            }
+        });
+    }
+    loadWinners();
+
+
+    </script>
+
+
+
+<script>
+    function addToCart(productId) {
+    $.ajax({
+        url: 'https://turkceoabtdeyiz.com/cart/add',
+        type: 'POST',
+        data: { product_id: productId, qty: 1 },
+        dataType: 'json',
+        success: function(res) {
+            if(res.status) {
+
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: res.message,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+
+                // Navbardaki sepet sayısını güncelle
+                $('.fa-cart-shopping').next('.badge').text(res.cart_count);
+
+                var navBadge = $('#navCartCount'); // Navbar'daki kırmızı yuvarlak
+                
+                // Gelen sayıyı al
+                var newCount = parseInt(res.cart_count); 
+                
+                // Sayıyı yazdır
+                navBadge.text(newCount);
+                // Eğer badge gizliyse (display:none ise) görünür yap
+                navBadge.show(); 
+                
+                // Opsiyonel: Küçük bir animasyon ekle (büyüyüp küçülme)
+                navBadge.addClass('animate__animated animate__bounceIn');
+
+            } else {
+                Swal.fire('Hata', res.message, 'error');
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>

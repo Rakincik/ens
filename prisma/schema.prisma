@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  surname      String
+  phone        String?
+  role         String   @default("STUDENT") // "ADMIN" or "STUDENT"
+  createdAt    DateTime @default(now())
+  orders       Order[]
+}
+
+model Category {
+  id         String   @id @default(uuid())
+  name       String
+  orderIndex Int      @default(0)
+  courses    Course[]
+}
+
+model Course {
+  id               String      @id @default(uuid())
+  title            String
+  description      String
+  price            Float
+  originalPrice    Float?
+  isActive         Boolean     @default(true)
+  image            String?     // Saved as file path/name
+  isCouponEligible Boolean     @default(true)
+  orderIndex       Int         @default(0) // For custom sorting
+  categories       Category[]
+  createdAt        DateTime    @default(now())
+  type             String      @default("COURSE") // "COURSE" or "PUBLICATION"
+  features         String[]
+  orderItems       OrderItem[]
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalAmount Float
+  status      String      @default("PENDING") // "PENDING", "SUCCESS", "FAILED"
+  paymentId   String?     @unique             // Merchant OID from PayTR or payment reference
+  couponId    String?
+  coupon      Coupon?     @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  createdAt   DateTime    @default(now())
+  orderItems  OrderItem[]
+}
+
+model OrderItem {
+  id       String @id @default(uuid())
+  orderId  String
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  price    Float
+}
+
+model Coupon {
+  id              String    @id @default(uuid())
+  code            String    @unique
+  discountType    String    // "PERCENTAGE" or "AMOUNT"
+  discountValue   Float
+  courseId        String?   // If null, applies to whole cart. If set, only applies to specific course.
+  isActive        Boolean   @default(true)
+  startDate       DateTime?
+  expiryDate      DateTime?
+  usageLimit      Int?
+  usageCount      Int       @default(0)
+  influencerName  String?
+  influencerEmail String?
+  createdAt       DateTime  @default(now())
+  orders          Order[]
+}
+
+model ContentSettings {
+  key   String @id // e.g. "faq", "achievements", "homepage_hero", "teachers", "slider"
+  value String // JSON string holding structure
+}
+
+model SupportMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
