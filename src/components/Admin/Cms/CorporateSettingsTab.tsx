@@ -53,7 +53,7 @@ export default function CorporateSettingsTab({ data, onChange, onSave, saving }:
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
         <div>
           <h3 style={{ fontSize: "18px", fontWeight: 700, color: "var(--color-primary)" }}>Kurumsal İçerikler</h3>
           <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Hakkımızda sayfası, eğitmen kadrosu ve başarı hikayelerini yönetin.</p>
@@ -71,8 +71,8 @@ export default function CorporateSettingsTab({ data, onChange, onSave, saving }:
       <div style={{ backgroundColor: "var(--bg-secondary)", padding: "20px", borderRadius: "12px", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "16px" }}>
         <h4 style={{ fontSize: "16px", fontWeight: 700, borderBottom: "1px solid var(--border-color)", paddingBottom: "8px" }}>Hakkımızda Sayfası İçerikleri</h4>
         
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "24px" }}>
-          <div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "24px" }}>
+          <div style={{ flex: "1 1 250px" }}>
             <ImageUploader 
               label="Hakkımızda Görseli" 
               value={aboutUs.image || ""} 
@@ -80,7 +80,7 @@ export default function CorporateSettingsTab({ data, onChange, onSave, saving }:
               recommendedSize="800x600px" 
             />
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div style={{ flex: "2 1 300px", display: "flex", flexDirection: "column", gap: "12px" }}>
             <div>
               <label style={{ fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "4px" }}>Ana Başlık</label>
               <input type="text" value={aboutUs.title} onChange={e => handleUpdateAbout("title", e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid var(--border-color)" }} placeholder="Örn: Biz Kimiz?" />
@@ -91,7 +91,7 @@ export default function CorporateSettingsTab({ data, onChange, onSave, saving }:
             </div>
           </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
           <div>
             <label style={{ fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "4px" }}>Misyonumuz</label>
             <textarea value={aboutUs.mission} onChange={e => handleUpdateAbout("mission", e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid var(--border-color)", minHeight: "80px", resize: "vertical" }} />
@@ -168,7 +168,7 @@ export default function CorporateSettingsTab({ data, onChange, onSave, saving }:
                 <span style={{ fontWeight: 600, color: "var(--text-secondary)", fontSize: "13px" }}>Kayıt {i + 1}</span>
                 <button onClick={() => handleRemoveAchievement(i)} style={{ background: "transparent", border: "none", color: "var(--color-error)", cursor: "pointer" }}><Trash2 size={16}/></button>
               </div>
-              <div style={{ display: "flex", gap: "12px" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ fontSize: "12px", fontWeight: 600, marginBottom: "4px", display: "block" }}>İsim Soyisim</label>
                   <input type="text" value={ach.name} onChange={e => handleUpdateAchievement(i, "name", e.target.value)} style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid var(--border-color)" }} placeholder="Örn: Büşra Y." />

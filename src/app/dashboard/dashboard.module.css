@@ -222,3 +222,23 @@
   background-color: rgba(185, 28, 28, 0.08);
   color: var(--color-error);
 }
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 90px 16px 40px 16px;
+  }
+  .headerArea {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .card {
+    padding: 16px;
+  }
+  .courseGrid {
+    grid-template-columns: 1fr;
+  }
+  .sections {
+    gap: 24px;
+  }
+}

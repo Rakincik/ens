@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Edit, Trash2, X, UploadCloud, GripVertical } from "lucide-react";
+import { Plus, Edit, Trash2, X, UploadCloud, GripVertical, ShieldCheck } from "lucide-react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import "react-quill-new/dist/quill.snow.css";
 import DeleteConfirmModal from "./DeleteConfirmModal";
 
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 import { useToast } from "@/contexts/ToastContext";
 import styles from "@/app/admin/dashboard/admin.module.css";
 
@@ -22,8 +21,11 @@ interface Course {
   image: string | null;
   isCouponEligible: boolean;
   orderIndex: number;
+  paymentLink?: string | null;
   categoryId?: string | null;
   category?: { name: string } | null;
+  categories?: { id: string; name: string }[] | null;
+  categoryIds?: string[];
   type?: string;
   features?: string[];
 }
@@ -59,22 +61,22 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
             if (!ctx) return reject(new Error("Canvas context failed"));
-            
+
             const targetSize = 800;
             canvas.width = targetSize;
             canvas.height = targetSize;
-            
+
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, targetSize, targetSize);
-            
+
             const scale = Math.min(targetSize / img.width, targetSize / img.height);
             const w = img.width * scale;
             const h = img.height * scale;
             const x = (targetSize - w) / 2;
             const y = (targetSize - h) / 2;
-            
+
             ctx.drawImage(img, x, y, w, h);
-            
+
             canvas.toBlob(
               (blob) => {
                 if (blob) resolve(blob);
@@ -101,7 +103,7 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
       });
 
       if (!res.ok) throw new Error("Yükleme başarısız");
-      
+
       const data = await res.json();
       onUploadSuccess(data.url);
       toast.success("Görsel başarıyla yüklendi!");
@@ -118,7 +120,7 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
         fetch(`/api/admin/courses?type=${productType}`),
         fetch("/api/admin/categories")
       ]);
-      
+
       if (coursesRes.ok) {
         const data = await coursesRes.json();
         setCourses(data.courses);
@@ -150,7 +152,7 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
     try {
       const isEdit = !!selectedCourse.id;
       const method = isEdit ? "PUT" : "POST";
-      
+
       const response = await fetch("/api/admin/courses", {
         method,
         headers: { "Content-Type": "application/json" },
@@ -262,10 +264,10 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
     <div className="animate-fade-in">
       <div className={styles.headerRow}>
         <h2 className={styles.viewTitle}>Kurs Paketleri</h2>
-        <button 
+        <button
           className={styles.btn}
           onClick={() => {
-            setSelectedCourse({ title: "", description: "", price: 0, originalPrice: null, isActive: true, isCouponEligible: true, image: null, orderIndex: 0, categoryIds: [], type: productType });
+            setSelectedCourse({ title: "", description: "", price: 0, originalPrice: null, isActive: true, isCouponEligible: true, image: null, orderIndex: 0, categoryIds: [], type: productType, paymentLink: null });
             setIsCategoryDropdownOpen(false);
             setShowCourseModal(true);
           }}
@@ -322,8 +324,8 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                               </td>
                               <td>
                                 <label className={styles.switchLabel}>
-                                  <input 
-                                    type="checkbox" 
+                                  <input
+                                    type="checkbox"
                                     className={styles.switchInput}
                                     checked={course.isCouponEligible}
                                     onChange={() => handleToggleCourseCoupon(course)}
@@ -333,8 +335,8 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                               </td>
                               <td>
                                 <label className={styles.switchLabel}>
-                                  <input 
-                                    type="checkbox" 
+                                  <input
+                                    type="checkbox"
                                     className={styles.switchInput}
                                     checked={course.isActive}
                                     onChange={() => handleToggleCourseActive(course)}
@@ -344,7 +346,7 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                               </td>
                               <td>
                                 <div style={{ display: "flex", gap: "8px" }}>
-                                  <button 
+                                  <button
                                     className={`${styles.btn} ${styles.btnOutline}`}
                                     style={{ padding: "6px" }}
                                     onClick={() => {
@@ -356,14 +358,14 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                                   >
                                     <Edit size={14} />
                                   </button>
-                                    <button 
-                                      className={`${styles.btn} ${styles.btnDanger}`}
-                                      style={{ padding: "6px" }}
-                                      onClick={() => setCourseToDelete(course.id)}
-                                      aria-label="Sil"
-                                    >
-                                      <Trash2 size={14} />
-                                    </button>
+                                  <button
+                                    className={`${styles.btn} ${styles.btnDanger}`}
+                                    style={{ padding: "6px" }}
+                                    onClick={() => setCourseToDelete(course.id)}
+                                    aria-label="Sil"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
                                 </div>
                               </td>
                             </tr>
@@ -386,8 +388,8 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
           <div className={`${styles.modal} ${styles.modalWide}`} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h3 className={styles.modalTitle}>
-                {selectedCourse.id 
-                  ? (productType === "COURSE" ? "Kurs Paketini Düzenle" : "Yayını Düzenle") 
+                {selectedCourse.id
+                  ? (productType === "COURSE" ? "Kurs Paketini Düzenle" : "Yayını Düzenle")
                   : (productType === "COURSE" ? "Yeni Kurs Paketi Oluştur" : "Yeni Yayın Oluştur")}
               </h3>
               <button className={styles.modalCloseBtn} type="button" onClick={() => { setIsCategoryDropdownOpen(false); setShowCourseModal(false); }}>
@@ -405,7 +407,7 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                       {selectedCourse.image ? (
                         <div style={{ position: "relative", width: "250px", height: "250px", margin: "0 auto", borderRadius: "12px", overflow: "hidden", border: "1px solid var(--border-color)", background: "#f8fafc" }}>
                           <Image src={selectedCourse.image} alt="Kapak" fill style={{ objectFit: "contain", padding: "16px" }} />
-                          <button 
+                          <button
                             type="button"
                             onClick={() => setSelectedCourse({ ...selectedCourse, image: null })}
                             style={{ position: "absolute", top: "12px", right: "12px", background: "rgba(255,255,255,0.85)", backdropFilter: "blur(4px)", color: "#ef4444", border: "1px solid rgba(239, 68, 68, 0.2)", borderRadius: "8px", padding: "8px", cursor: "pointer", zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)", transition: "all 0.2s" }}
@@ -419,9 +421,9 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                       ) : (
                         <div style={{ width: "250px", height: "250px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", border: "2px dashed var(--border-color)", borderRadius: "12px", textAlign: "center", cursor: "pointer", transition: "all 0.2s ease", backgroundColor: "#f8fafc" }}>
                           <label style={{ display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", width: "100%" }}>
-                            <input 
-                              type="file" 
-                              accept="image/*" 
+                            <input
+                              type="file"
+                              accept="image/*"
                               style={{ display: "none" }}
                               onChange={(e) => {
                                 if (e.target.files && e.target.files[0]) {
@@ -444,12 +446,12 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                   <div className={styles.formColumn}>
                     <div className={styles.formGroup}>
                       <label>{productType === "COURSE" ? "Kurs Adı (Paket Başlığı)" : "Yayın Adı"}</label>
-                      <input 
-                        type="text" 
-                        className={styles.input} 
+                      <input
+                        type="text"
+                        className={styles.input}
                         required
-                        value={selectedCourse.title || ""} 
-                        onChange={(e) => setSelectedCourse({ ...selectedCourse, title: e.target.value })} 
+                        value={selectedCourse.title || ""}
+                        onChange={(e) => setSelectedCourse({ ...selectedCourse, title: e.target.value })}
                       />
                     </div>
                     <div style={{ display: "flex", gap: "16px" }}>
@@ -463,19 +465,19 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                             onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
                           >
                             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                              {selectedCourse.categoryIds?.length 
-                                ? `${selectedCourse.categoryIds.length} Kategori Seçildi` 
+                              {selectedCourse.categoryIds?.length
+                                ? `${selectedCourse.categoryIds.length} Kategori Seçildi`
                                 : "Kategori Seçin"}
                             </span>
                             <span style={{ fontSize: "10px", transform: isCategoryDropdownOpen ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>▼</span>
                           </button>
-                          
+
                           {isCategoryDropdownOpen && (
                             <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "4px", zIndex: 100, display: "flex", flexDirection: "column", gap: "2px", maxHeight: "200px", overflowY: "auto", border: "1px solid var(--border-color)", borderRadius: "8px", background: "#fff", padding: "4px", boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)" }}>
                               {categories.map(c => (
                                 <label key={c.id} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", background: selectedCourse.categoryIds?.includes(c.id) ? "rgba(184, 144, 71, 0.08)" : "transparent", color: selectedCourse.categoryIds?.includes(c.id) ? "var(--color-primary)" : "var(--text-primary)", padding: "8px 12px", borderRadius: "6px", fontSize: "14px", transition: "background 0.2s", fontWeight: selectedCourse.categoryIds?.includes(c.id) ? 600 : 400 }}>
-                                  <input 
-                                    type="checkbox" 
+                                  <input
+                                    type="checkbox"
                                     style={{ width: "16px", height: "16px", accentColor: "var(--color-primary)", cursor: "pointer" }}
                                     checked={selectedCourse.categoryIds?.includes(c.id) || false}
                                     onChange={(e) => {
@@ -527,84 +529,139 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                       </div>
                     </div>
 
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>Açıklama (Zengin Metin)</label>
-                      <div style={{ background: "#fff", color: "#000", borderRadius: "12px", overflow: "hidden", border: "1px solid var(--border-color)" }}>
-                        <ReactQuill 
-                          theme="snow" 
-                          value={selectedCourse.description || ""} 
-                          onChange={(content) => setSelectedCourse({ ...selectedCourse, description: content })}
-                          style={{ height: "230px", border: "none", paddingBottom: "42px" }}
-                        />
-                      </div>
-                    </div>
                     <div className={styles.formGroup} style={{ marginTop: "16px" }}>
-                      <label className={styles.label}>Özellikler (Tikli Maddeler)</label>
-                      <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-                        <input
-                          type="text"
-                          className={styles.input}
-                          placeholder="Örn: Güvenli PayTR Altyapısı"
-                          value={newFeature}
-                          onChange={(e) => setNewFeature(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              if (newFeature.trim()) {
-                                setSelectedCourse(prev => ({ ...prev, features: [...(prev?.features || []), newFeature.trim()] }));
-                                setNewFeature("");
-                              }
-                            }
-                          }}
-                        />
+                      <label className={styles.label}>Ödeme Yöntemi Tercihi</label>
+                      <div style={{ display: "flex", gap: "16px", marginBottom: "8px", padding: "12px", backgroundColor: "rgba(184, 144, 71, 0.05)", borderRadius: "8px", border: "1px solid rgba(184, 144, 71, 0.2)" }}>
+                        <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px", fontWeight: 600, color: (!selectedCourse.paymentLink || selectedCourse.paymentLink === "") ? "var(--color-primary)" : "var(--text-secondary)" }}>
+                          <input 
+                            type="radio" 
+                            name="paymentMethod" 
+                            checked={!selectedCourse.paymentLink || selectedCourse.paymentLink === ""} 
+                            onChange={() => setSelectedCourse({ ...selectedCourse, paymentLink: "" })}
+                            style={{ width: "16px", height: "16px", accentColor: "var(--color-primary)" }}
+                          />
+                          Site İçi Ödeme (PayTR API)
+                        </label>
+                        <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px", fontWeight: 600, color: (selectedCourse.paymentLink && selectedCourse.paymentLink !== "") ? "var(--color-primary)" : "var(--text-secondary)" }}>
+                          <input 
+                            type="radio" 
+                            name="paymentMethod" 
+                            checked={!!selectedCourse.paymentLink && selectedCourse.paymentLink !== ""} 
+                            onChange={() => setSelectedCourse({ ...selectedCourse, paymentLink: "https://" })}
+                            style={{ width: "16px", height: "16px", accentColor: "var(--color-primary)" }}
+                          />
+                          Harici Link ile Yönlendir
+                        </label>
+                      </div>
+
+                      {!!selectedCourse.paymentLink && selectedCourse.paymentLink !== "" && (
+                        <div style={{ animation: "fadeIn 0.2s ease" }}>
+                          <input
+                            className={styles.input}
+                            type="url"
+                            placeholder="Örn: https://www.paytr.com/link/..."
+                            value={selectedCourse.paymentLink === "https://" ? "" : selectedCourse.paymentLink}
+                            onChange={(e) => setSelectedCourse({ ...selectedCourse, paymentLink: e.target.value })}
+                            style={{ fontSize: "14px", padding: "12px 16px", width: "100%" }}
+                          />
+                          <small style={{ color: "var(--text-muted)", fontSize: "12px", marginTop: "4px", display: "block" }}>
+                            Eğer bu yöntem seçiliyse, kullanıcı Sepete Ekle butonuna bastığında direkt olarak bu linke yönlendirilir.
+                          </small>
+                        </div>
+                      )}
+
+                      {(!selectedCourse.paymentLink || selectedCourse.paymentLink === "") && (
+                        <small style={{ color: "var(--color-success)", fontSize: "12px", marginTop: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
+                          <ShieldCheck size={14} /> Bu seçenek aktif olduğunda, ürün sisteme kaydedilir ve PayTR API (Checkout) ile site içinden satılır.
+                        </small>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Grid'in dışına alınan tam genişlik alanlar */}
+                <div className={styles.formGroup} style={{ marginTop: "24px" }}>
+                  <label className={styles.label}>Açıklama (Zengin Metin)</label>
+                  <div style={{ background: "#fff", color: "#000", borderRadius: "12px", overflow: "hidden", border: "1px solid var(--border-color)" }}>
+                    <JoditEditor
+                      value={(selectedCourse.description || "").replace(/&nbsp;/g, ' ')}
+                      config={{
+                        height: 500,
+                        placeholder: "Detaylı açıklama yazın...",
+                        enableDragAndDropFileToEditor: true,
+                        uploader: { insertImageAsBase64URI: true },
+                        language: "tr"
+                      }}
+                      onBlur={newContent => setSelectedCourse({ ...selectedCourse, description: newContent.replace(/&nbsp;/g, ' ') })}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup} style={{ marginTop: "16px" }}>
+                  <label className={styles.label}>Özellikler (Tikli Maddeler)</label>
+                  <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      placeholder="Örn: Güvenli PayTR Altyapısı"
+                      value={newFeature}
+                      onChange={(e) => setNewFeature(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          if (newFeature.trim()) {
+                            setSelectedCourse(prev => ({ ...prev, features: [...(prev?.features || []), newFeature.trim()] }));
+                            setNewFeature("");
+                          }
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className={`${styles.btn} ${styles.btnOutline}`}
+                      onClick={() => {
+                        if (newFeature.trim()) {
+                          setSelectedCourse(prev => ({ ...prev, features: [...(prev?.features || []), newFeature.trim()] }));
+                          setNewFeature("");
+                        }
+                      }}
+                    >
+                      Ekle
+                    </button>
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    {(selectedCourse.features || []).map((feature, idx) => (
+                      <div key={idx} style={{ display: "flex", alignItems: "center", gap: "4px", background: "var(--color-primary-light)", color: "var(--color-primary)", padding: "4px 8px", borderRadius: "16px", fontSize: "13px", fontWeight: 500 }}>
+                        <span>{feature}</span>
                         <button
                           type="button"
-                          className={`${styles.btn} ${styles.btnOutline}`}
                           onClick={() => {
-                            if (newFeature.trim()) {
-                              setSelectedCourse(prev => ({ ...prev, features: [...(prev?.features || []), newFeature.trim()] }));
-                              setNewFeature("");
-                            }
+                            setSelectedCourse(prev => ({
+                              ...prev,
+                              features: (prev?.features || []).filter((_, i) => i !== idx)
+                            }));
                           }}
+                          style={{ display: "flex", background: "transparent", border: "none", color: "var(--color-primary)", cursor: "pointer", padding: "0" }}
                         >
-                          Ekle
+                          <X size={14} />
                         </button>
                       </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                        {(selectedCourse.features || []).map((feature, idx) => (
-                          <div key={idx} style={{ display: "flex", alignItems: "center", gap: "4px", background: "var(--color-primary-light)", color: "var(--color-primary)", padding: "4px 8px", borderRadius: "16px", fontSize: "13px", fontWeight: 500 }}>
-                            <span>{feature}</span>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedCourse(prev => ({
-                                  ...prev,
-                                  features: (prev?.features || []).filter((_, i) => i !== idx)
-                                }));
-                              }}
-                              style={{ display: "flex", background: "transparent", border: "none", color: "var(--color-primary)", cursor: "pointer", padding: "0" }}
-                            >
-                              <X size={14} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
 
               <div className={styles.modalFooter}>
-                <button 
-                  className={`${styles.btn} ${styles.btnOutline}`} 
-                  type="button" 
+                <button
+                  className={`${styles.btn} ${styles.btnOutline}`}
+                  type="button"
                   onClick={() => { setIsCategoryDropdownOpen(false); setShowCourseModal(false); }}
                 >
                   İptal
                 </button>
-                <button 
-                  className={styles.btn} 
-                  type="submit" 
+                <button
+                  className={styles.btn}
+                  type="submit"
                   disabled={isSavingCourse}
                 >
                   {selectedCourse.id ? "Güncelle" : "Ekle"}
@@ -618,7 +675,7 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
       <DeleteConfirmModal
         isOpen={!!courseToDelete}
         onClose={() => setCourseToDelete(null)}
-        onConfirm={() => { if(courseToDelete) executeDeleteCourse(courseToDelete); }}
+        onConfirm={() => { if (courseToDelete) executeDeleteCourse(courseToDelete); }}
         title="Kursu Sil"
         message="Bu kurs paketini silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
         isDeleting={isDeleting}

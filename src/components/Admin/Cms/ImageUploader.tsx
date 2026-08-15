@@ -19,8 +19,62 @@ export default function ImageUploader({ value, onChange, recommendedSize, label 
   const handleUpload = async (file: File) => {
     try {
       setUploading(true);
+      
+      // Frontend Image Optimization (Auto WebP & Resize)
+      const optimizedBlob = await new Promise<Blob>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new window.Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return reject(new Error("Canvas context failed"));
+            
+            // Auto size calculation (max 800px)
+            let width = img.width;
+            let height = img.height;
+            const MAX_SIZE = 800;
+            
+            if (width > height) {
+              if (width > MAX_SIZE) {
+                height = Math.round(height * (MAX_SIZE / width));
+                width = MAX_SIZE;
+              }
+            } else {
+              if (height > MAX_SIZE) {
+                width = Math.round(width * (MAX_SIZE / height));
+                height = MAX_SIZE;
+              }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Fill white background for transparent images
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+            
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            canvas.toBlob(
+              (blob) => {
+                if (blob) resolve(blob);
+                else reject(new Error("Canvas toBlob failed"));
+              },
+              "image/webp",
+              0.85
+            );
+          };
+          img.onerror = reject;
+          img.src = e.target?.result as string;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
       const formData = new FormData();
-      formData.append("file", file);
+      const originalName = file.name.split('.')[0] || 'image';
+      formData.append("file", optimizedBlob, `${originalName}.webp`);
       
       const res = await fetch("/api/admin/upload", {
         method: "POST",
@@ -30,7 +84,7 @@ export default function ImageUploader({ value, onChange, recommendedSize, label 
       if (res.ok) {
         const data = await res.json();
         onChange(data.url);
-        toast.success("Görsel başarıyla yüklendi.");
+        toast.success("Görsel otomatik optimize edilerek yüklendi.");
       } else {
         toast.error("Görsel yüklenemedi.");
       }
@@ -92,7 +146,9 @@ export default function ImageUploader({ value, onChange, recommendedSize, label 
           </label>
         )}
       </div>
-      {recommendedSize && <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Önerilen: {recommendedSize}</span>}
+      <span style={{ fontSize: "11px", color: "var(--color-success, #10b981)", display: "flex", alignItems: "center", gap: "4px", marginTop: "2px", fontWeight: 500 }}>
+        ✨ Boyut sınırı yok, sistem arka planda otomatik optimize eder
+      </span>
     </div>
   );
 }

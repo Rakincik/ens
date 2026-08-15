@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingBag, ChevronRight, BookOpen, Star, Clock, Filter, ArrowRight, PlayCircle, Lock, Menu, ShieldCheck, HelpCircle, ChevronDown, ChevronLeft, ShoppingCart, Search, Check, Phone, Users } from "lucide-react";
+import { ShoppingBag, ChevronRight, BookOpen, Star, Clock, Filter, ArrowRight, PlayCircle, Lock, Menu, ShieldCheck, HelpCircle, ChevronDown, ChevronLeft, ShoppingCart, Search, Check, CheckCircle, Phone, Users } from "lucide-react";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/contexts/ToastContext";
+import { useAuth } from "@/contexts/AuthContext";
 import styles from "./Home.module.css";
 
 interface Course {
@@ -19,12 +20,14 @@ interface Course {
   isActive: boolean;
   image: string | null;
   isCouponEligible: boolean;
+  paymentLink?: string | null;
   categories?: { id: string; name: string }[];
 }
 
 export default function Home() {
   const { addToCart } = useCart();
   const toast = useToast();
+  const { user } = useAuth();
 
   const [courses, setCourses] = useState<Course[]>([]);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
@@ -83,14 +86,14 @@ export default function Home() {
       try {
         setLoading(true);
         // Kursları çek
-        const coursesRes = await fetch("/api/public/courses");
+        const coursesRes = await fetch("/api/public/courses?type=COURSE");
         if (coursesRes.ok) {
           const data = await coursesRes.json();
           setCourses(data.courses);
         }
 
         // Kategorileri çek
-        const catRes = await fetch("/api/public/categories");
+        const catRes = await fetch("/api/public/categories?type=COURSE");
         if (catRes.ok) {
           const catData = await catRes.json();
           setCategories(catData.categories || []);
@@ -173,150 +176,154 @@ export default function Home() {
           overflow: "hidden",
           padding: 0
         }}>
-          {sliders.length > 0 ? (
-            <div 
-              style={{
-                width: "100%",
-                minHeight: "480px",
-                display: "flex",
-                alignItems: "center",
-                transition: "background-image 0.5s ease-in-out, background-color 0.5s ease-in-out",
-                backgroundImage: sliders[currentSlide]?.image 
-                  ? `linear-gradient(rgba(30, 41, 59, 0.65), rgba(30, 41, 59, 0.85)), url(${sliders[currentSlide]?.image})` 
-                  : "none",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundColor: sliders[currentSlide]?.image ? "transparent" : "var(--bg-secondary)",
-                padding: "80px 0 100px 0"
-              }}
-            >
-              <div className={`${styles.heroLayout} container`} style={{ minHeight: "420px" }}>
-                {/* Left Content */}
-                <div key={`text-${currentSlide}`} className={styles.heroContent} style={{ color: sliders[currentSlide]?.image ? "white" : "inherit", animation: "fadeIn 0.5s ease-out", minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                  <div className={styles.badge} style={{
-                    backgroundColor: sliders[currentSlide]?.image ? "rgba(255,255,255,0.1)" : "var(--color-primary-light)",
-                    borderColor: sliders[currentSlide]?.image ? "rgba(255,255,255,0.2)" : "var(--border-color)",
-                    color: sliders[currentSlide]?.image ? "white" : "var(--color-primary)"
-                  }}>
-                    🥇 <span className={styles.badgeAccent} style={{ color: "var(--color-accent)" }}>ÖSYM Uyumlu</span> Türkçe & Edebiyat ÖABT
-                  </div>
-                  <h1 className={styles.heroTitle} style={{ color: sliders[currentSlide]?.image ? "white" : "var(--color-primary)" }}>
-                    {sliders[currentSlide]?.title}
-                  </h1>
-                  <p className={styles.heroDesc} style={{ color: sliders[currentSlide]?.image ? "rgba(255,255,255,0.9)" : "var(--text-secondary)" }}>
-                    {sliders[currentSlide]?.subtitle}
-                  </p>
-                  <div className={styles.heroActions}>
-                    <a href={sliders[currentSlide]?.buttonLink} className={styles.heroBtn}>
-                      {sliders[currentSlide]?.buttonText}
-                    </a>
-                    <a href="#iletisim" className={`${styles.heroBtn} ${styles.heroBtnOutline}`} style={{
-                      color: sliders[currentSlide]?.image ? "white" : "var(--color-primary)",
-                      borderColor: sliders[currentSlide]?.image ? "white" : "var(--color-primary)"
-                    }}>
-                      Ön Bilgi Al
-                    </a>
-                  </div>
-                </div>
+          {loading ? (
+            <div style={{ width: "100%", minHeight: "480px", backgroundColor: "var(--bg-secondary)" }} />
+          ) : sliders.length > 0 ? (
+            <div style={{
+              display: "flex",
+              width: "100%",
+              transition: "transform 0.5s ease-in-out",
+              transform: `translateX(-${currentSlide * 100}%)`
+            }}>
+              {sliders.map((slide, slideIdx) => (
+                <div 
+                  key={slideIdx}
+                  className={styles.slideItem}
+                  style={{
+                    backgroundImage: slide.image ? `url(${slide.image})` : "none",
+                    backgroundColor: slide.image ? "transparent" : "var(--bg-secondary)",
+                    padding: slide.image ? "0" : "80px 0 100px 0",
+                    cursor: (slide.image && slide.buttonLink && slide.buttonLink !== "#") ? "pointer" : "default"
+                  }}
+                  onClick={() => {
+                    if (slide.image && slide.buttonLink && slide.buttonLink !== "#") {
+                      window.location.href = slide.buttonLink;
+                    }
+                  }}
+                >
+                  {/* Sadece görsel yüklü DEĞİLSE eski tipteki metinleri ve butonları göster */}
+                  {!slide.image && (
+                    <div className={`${styles.heroLayout} container`} style={{ minHeight: "420px" }}>
+                      {/* Left Content */}
+                      <div className={styles.heroContent} style={{ color: "var(--color-primary)", minHeight: "260px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                        <div className={styles.badge} style={{ backgroundColor: "var(--color-primary-light)", borderColor: "var(--border-color)", color: "var(--color-primary)" }}>
+                          🥇 <span className={styles.badgeAccent} style={{ color: "var(--color-accent)" }}>ÖSYM Uyumlu</span> Türkçe & Edebiyat ÖABT
+                        </div>
+                        <h1 className={styles.heroTitle} style={{ color: "var(--color-primary)" }}>
+                          {slide.title}
+                        </h1>
+                        <p className={styles.heroDesc} style={{ color: "var(--text-secondary)" }}>
+                          {slide.subtitle}
+                        </p>
+                        <div className={styles.heroActions}>
+                          <a href={slide.buttonLink} className={styles.heroBtn}>
+                            {slide.buttonText}
+                          </a>
+                          <a href="#iletisim" className={`${styles.heroBtn} ${styles.heroBtnOutline}`} style={{ color: "var(--color-primary)", borderColor: "var(--color-primary)" }}>
+                            Ön Bilgi Al
+                          </a>
+                        </div>
+                      </div>
 
-                {/* Right Content: Dynamic Visual Showcase (Only render if admin didn't upload a custom banner image!) */}
-                {!sliders[currentSlide]?.image && (
-                  <div key={`img-${currentSlide}`} className={styles.heroImageArea} style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "380px", animation: "fadeIn 0.5s ease-out" }}>
-                    {currentSlide === 0 ? (
-                      <div style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(3, 1fr)",
-                        gridTemplateRows: "repeat(2, 1fr)",
-                        gap: "16px",
-                        width: "100%",
-                        maxWidth: "500px",
-                        height: "320px"
-                      }}>
-                        {(teachers.length > 0 ? teachers.slice(0, 6) : [
-                          { name: "Enes Kaan Şahin", title: "Dört Temel Beceri" },
-                          { name: "Asım Kara", title: "Yeni Türk Edebiyatı" },
-                          { name: "Ali Zeybek", title: "Halk Edebiyatı" },
-                          { name: "İlker Hayat", title: "Eski Türk Edebiyatı" },
-                          { name: "Fatih Bedir", title: "Dil Bilgisi" },
-                          { name: "İsa Kurtul", title: "Çocuk Edebiyatı" }
-                        ]).map((teacher, idx) => (
-                          <div key={idx} style={{
+                      {/* Right Content */}
+                      <div className={styles.heroImageArea} style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "380px" }}>
+                        {slideIdx === 0 ? (
+                          <div style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(3, 1fr)",
+                            gridTemplateRows: "repeat(2, 1fr)",
+                            gap: "16px",
+                            width: "100%",
+                            maxWidth: "500px",
+                            height: "320px"
+                          }}>
+                            {(teachers.length > 0 ? teachers.slice(0, 6) : [
+                              { name: "Enes Kaan Şahin", title: "Dört Temel Beceri" },
+                              { name: "Asım Kara", title: "Yeni Türk Edebiyatı" },
+                              { name: "Ali Zeybek", title: "Halk Edebiyatı" },
+                              { name: "İlker Hayat", title: "Eski Türk Edebiyatı" },
+                              { name: "Fatih Bedir", title: "Dil Bilgisi" },
+                              { name: "İsa Kurtul", title: "Çocuk Edebiyatı" }
+                            ]).map((teacher, idx) => (
+                              <div key={idx} style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                textAlign: "center",
+                                backgroundColor: "var(--bg-secondary)",
+                                border: "1.5px solid var(--border-color)",
+                                borderRadius: "var(--radius-md)",
+                                padding: "16px 12px",
+                                boxShadow: "var(--shadow-sm)"
+                              }}>
+                                <div style={{
+                                  width: "56px",
+                                  height: "56px",
+                                  borderRadius: "50%",
+                                  backgroundColor: "var(--color-primary-light)",
+                                  color: "var(--color-accent)",
+                                  display: "flex",
+                                  flexShrink: 0,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  fontWeight: 700,
+                                  fontSize: "18px",
+                                  border: "2px solid var(--color-accent)",
+                                  marginBottom: "8px",
+                                  overflow: "hidden"
+                                }}>
+                                  {(teacher as any).image ? (
+                                    <img src={(teacher as any).image} alt={teacher.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                  ) : (
+                                    teacher.name.split(" ").map(n => n[0]).join("")
+                                  )}
+                                </div>
+                                <h4 style={{ fontSize: "12px", fontWeight: 700, color: "var(--color-primary)", lineHeight: "1.2" }}>{teacher.name}</h4>
+                                <p style={{ fontSize: "10px", color: "var(--text-secondary)", marginTop: "4px", lineHeight: "1.2" }}>{(teacher as any).title}</p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          /* Slide 1: Success ranking badges */
+                          <div style={{
                             display: "flex",
                             flexDirection: "column",
-                            alignItems: "center",
-                            textAlign: "center",
-                            backgroundColor: "var(--bg-secondary)",
-                            border: "1.5px solid var(--border-color)",
-                            borderRadius: "var(--radius-md)",
-                            padding: "16px 12px",
-                            boxShadow: "var(--shadow-sm)"
+                            justifyContent: "center",
+                            gap: "20px",
+                            width: "100%",
+                            maxWidth: "500px",
+                            height: "320px",
+                            backgroundColor: "var(--color-primary)",
+                            padding: "32px 40px",
+                            borderRadius: "var(--radius-lg)",
+                            color: "white",
+                            boxShadow: "var(--shadow-lg)",
+                            background: "linear-gradient(135deg, var(--color-primary) 0%, #222e3f 100%)"
                           }}>
-                            <div style={{
-                              width: "56px",
-                              height: "56px",
-                              borderRadius: "50%",
-                              backgroundColor: "var(--color-primary-light)",
-                              color: "var(--color-accent)",
-                              display: "flex",
-                              flexShrink: 0,
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontWeight: 700,
-                              fontSize: "18px",
-                              border: "2px solid var(--color-accent)",
-                              marginBottom: "8px",
-                              overflow: "hidden"
-                            }}>
-                              {(teacher as any).image ? (
-                                <img src={(teacher as any).image} alt={teacher.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                              ) : (
-                                teacher.name.split(" ").map(n => n[0]).join("")
-                              )}
+                            <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--color-accent)", textTransform: "uppercase" }}>
+                              Zirvedekilerin Tercihi
                             </div>
-                            <h4 style={{ fontSize: "12px", fontWeight: 700, color: "var(--color-primary)", lineHeight: "1.2" }}>{teacher.name}</h4>
-                            <p style={{ fontSize: "10px", color: "var(--text-secondary)", marginTop: "4px", lineHeight: "1.2" }}>{(teacher as any).title}</p>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "8px" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "8px" }}>
+                                <span>Büşra Özbağ</span>
+                                <strong style={{ color: "var(--color-accent)" }}>Türkiye 1.si (Rehberlik)</strong>
+                              </div>
+                              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "8px" }}>
+                                <span>Ali Yılmaz</span>
+                                <strong style={{ color: "var(--color-accent)" }}>Türkiye 3.sü (Türkçe)</strong>
+                              </div>
+                              <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "4px" }}>
+                                <span>Merve Kaya</span>
+                                <strong style={{ color: "var(--color-accent)" }}>Türkiye 7.si (Edebiyat)</strong>
+                              </div>
+                            </div>
                           </div>
-                        ))}
+                        )}
                       </div>
-                    ) : (
-                      /* Slide 1: Success ranking badges */
-                      <div style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        gap: "20px",
-                        width: "100%",
-                        maxWidth: "500px",
-                        height: "320px",
-                        backgroundColor: "var(--color-primary)",
-                        padding: "32px 40px",
-                        borderRadius: "var(--radius-lg)",
-                        color: "white",
-                        boxShadow: "var(--shadow-lg)",
-                        background: "linear-gradient(135deg, var(--color-primary) 0%, #222e3f 100%)"
-                      }}>
-                        <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--color-accent)", textTransform: "uppercase" }}>
-                          Zirvedekilerin Tercihi
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "8px" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "8px" }}>
-                            <span>Büşra Özbağ</span>
-                            <strong style={{ color: "var(--color-accent)" }}>Türkiye 1.si (Rehberlik)</strong>
-                          </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "8px" }}>
-                            <span>Ali Yılmaz</span>
-                            <strong style={{ color: "var(--color-accent)" }}>Türkiye 3.sü (Türkçe)</strong>
-                          </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "4px" }}>
-                            <span>Merve Kaya</span>
-                            <strong style={{ color: "var(--color-accent)" }}>Türkiye 7.si (Edebiyat)</strong>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           ) : (
             <div className={`${styles.heroLayout} container`} style={{ padding: "80px 0" }}>
@@ -611,7 +618,7 @@ export default function Home() {
                     
                     <div className={styles.courseContent}>
                       <Link href={`/urun/${course.id}`}>
-                        <h3 className={styles.courseTitle}>{course.title}</h3>
+                        <h3 className={styles.courseTitle} title={course.title}>{course.title}</h3>
                       </Link>
                       <div className={styles.courseDesc}>
                         {course.description ? (() => {
@@ -636,7 +643,8 @@ export default function Home() {
                             cleanText = cleanText.replace(/\n+/g, ' ').trim();
                           }
                           
-                          return cleanText;
+                          if (!cleanText || cleanText === '...') return null;
+                          return cleanText.length > 120 ? cleanText.substring(0, 120) + '...' : cleanText;
                         })() : ''}
                       </div>
                       
@@ -656,22 +664,36 @@ export default function Home() {
                             <span className={styles.coursePrice}>
                               ₺{course.price.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                             </span>
-                            <button
-                              className={styles.addToCartBtn}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                addToCart({
-                                  id: course.id,
-                                  title: course.title,
-                                  price: course.price,
-                                  image: null,
-                                  isCouponEligible: course.isCouponEligible
-                                });
-                              }}
-                            >
-                              <ShoppingCart size={16} />
-                              <span>Sepete Ekle</span>
-                            </button>
+                            {course.paymentLink ? (
+                              <button
+                                className={styles.addToCartBtn}
+                                style={{ backgroundColor: "#198754" }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  window.open(course.paymentLink as string, '_blank');
+                                }}
+                              >
+                                <CheckCircle size={16} />
+                                <span>Satın Al / Kaydol</span>
+                              </button>
+                            ) : (
+                              <button
+                                className={styles.addToCartBtn}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  addToCart({
+                                    id: course.id,
+                                    title: course.title,
+                                    price: course.price,
+                                    image: course.image,
+                                    isCouponEligible: course.isCouponEligible
+                                  });
+                                }}
+                              >
+                                <ShoppingCart size={16} />
+                                <span>Sepete Ekle</span>
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -771,29 +793,49 @@ export default function Home() {
 
               <div className={styles.coursesGrid}>
                 {teachers.map((t, index) => (
-                  <div key={index} className={styles.courseCard} style={{ padding: "32px", gap: "16px", textAlign: "center" }}>
+                  <div key={index} className={styles.courseCard} style={{ 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    overflow: "hidden", 
+                    textAlign: "center",
+                    padding: 0
+                  }}>
                     <div style={{
-                      width: "120px",
-                      height: "120px",
-                      borderRadius: "50%",
+                      width: "100%",
+                      aspectRatio: "4 / 5",
                       backgroundColor: "var(--color-primary-light)",
-                      margin: "0 auto 16px auto",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       color: "var(--color-accent)",
-                      border: "2px solid var(--border-color)",
+                      borderBottom: "3px solid var(--color-accent)",
                       overflow: "hidden"
                     }}>
                       {(t as any).image ? (
-                        <img src={(t as any).image} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img 
+                          src={(t as any).image} 
+                          alt={t.name} 
+                          style={{ 
+                            width: "100%", 
+                            height: "100%", 
+                            objectFit: "cover",
+                            objectPosition: "top"
+                          }} 
+                        />
                       ) : (
-                        <Users size={36} />
+                        <Users size={48} />
                       )}
                     </div>
-                    <h3 style={{ fontSize: "18px", fontWeight: 700 }}>{t.name}</h3>
-                    <h4 style={{ fontSize: "13px", color: "var(--color-accent)", fontWeight: 600 }}>{t.title}</h4>
-                    <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.6" }}>{t.bio}</p>
+                    
+                    <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                      <h3 style={{ fontSize: "18px", fontWeight: 700, margin: 0 }}>{t.name}</h3>
+                      <h4 style={{ fontSize: "13px", color: "var(--color-accent)", fontWeight: 600, margin: 0 }}>{t.title}</h4>
+                      {t.bio && (
+                        <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.6", margin: 0 }}>
+                          {t.bio}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

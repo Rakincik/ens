@@ -7,6 +7,8 @@ import { BookOpen, Search, ShoppingCart, Filter, RotateCcw, CheckCircle } from "
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/contexts/ToastContext";
+import { useAuth } from "@/contexts/AuthContext";
 import styles from "../Home.module.css";
 
 interface Publication {
@@ -17,11 +19,14 @@ interface Publication {
   originalPrice?: number | null;
   image: string | null;
   isCouponEligible: boolean;
+  paymentLink?: string | null;
   categories?: { id: string; name: string }[];
 }
 
 export default function PublicationsPage() {
   const { addToCart } = useCart();
+  const toast = useToast();
+  const { user } = useAuth();
   const [publications, setPublications] = useState<Publication[]>([]);
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,27 +40,19 @@ export default function PublicationsPage() {
     async function fetchPublications() {
       try {
         setLoading(true);
-        const response = await fetch("/api/public/courses");
-        if (response.ok) {
-          const data = await response.json();
-          const books = data.courses.filter((course: any) =>
-            course.type === "PUBLICATION" ||
-            course.categories?.some((c: any) => c.name === "Yayınlar" || c.name === "Kitap") || 
-            course.title.toLowerCase().includes("kitap") || course.title.toLowerCase().includes("yayın")
-          );
-          setPublications(books);
+        const [coursesRes, catRes] = await Promise.all([
+          fetch("/api/public/courses?type=PUBLICATION"),
+          fetch("/api/public/categories?type=PUBLICATION")
+        ]);
 
-          const allCatMap = new Map<string, {id: string, name: string}>();
-          books.forEach((book: any) => {
-            if (book.categories) {
-              book.categories.forEach((c: any) => {
-                if (c.name !== "Yayınlar" && c.name !== "Kitap") {
-                  allCatMap.set(c.name, c);
-                }
-              });
-            }
-          });
-          setCategories(Array.from(allCatMap.values()));
+        if (coursesRes.ok) {
+          const data = await coursesRes.json();
+          setPublications(data.courses || []);
+        }
+
+        if (catRes.ok) {
+          const catData = await catRes.json();
+          setCategories(catData.categories || []);
         }
       } catch (error) {
         console.error("Error loading publications:", error);
@@ -245,10 +242,30 @@ export default function PublicationsPage() {
                         
                         <div className={styles.courseContent}>
                           <Link href={`/urun/${pub.id}`}>
-                            <h3 className={styles.courseTitle}>{pub.title}</h3>
+                            <h3 className={styles.courseTitle} title={pub.title}>{pub.title}</h3>
                           </Link>
                           <div className={styles.courseDesc}>
-                            {pub.description ? pub.description.replace(/<[^>]*>?/gm, '').substring(0, 120) + '...' : ''}
+                            {pub.description ? (() => {
+                              let cleanText = pub.description
+                                .replace(/<\/(p|div|h[1-6]|li)>/gi, '\n')
+                                .replace(/<br\s*\/?>/gi, '\n')
+                                .replace(/<[^>]*>?/gm, '')
+                                .replace(/&nbsp;/g, ' ')
+                                .replace(/&shy;/g, '')
+                                .replace(/\u00AD/g, '')
+                                .replace(/\u200B/g, '')
+                                .replace(/&amp;/g, '&')
+                                .replace(/&quot;/g, '"')
+                                .replace(/&#39;/g, "'")
+                                .replace(/&lt;/g, '<')
+                                .replace(/&gt;/g, '>')
+                                .replace(/&rdquo;/g, '"')
+                                .replace(/&ldquo;/g, '"');
+                              cleanText = cleanText.replace(/\n+/g, ' ').trim();
+                              
+                              if (!cleanText || cleanText === '...') return null;
+                              return cleanText.length > 120 ? cleanText.substring(0, 120) + '...' : cleanText;
+                            })() : ''}
                           </div>
                           
                           <div className={styles.courseFooter}>
@@ -267,22 +284,41 @@ export default function PublicationsPage() {
                                 <span className={styles.coursePrice}>
                                   ₺{pub.price.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                                 </span>
-                                <button
-                                  className={styles.addToCartBtn}
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    addToCart({
-                                      id: pub.id,
-                                      title: pub.title,
-                                      price: pub.price,
-                                      image: null,
-                                      isCouponEligible: pub.isCouponEligible
-                                    });
-                                  }}
-                                >
-                                  <ShoppingCart size={16} />
-                                  <span>Sepete Ekle</span>
-                                </button>
+                                {pub.paymentLink ? (
+                                  <button
+                                    className={styles.addToCartBtn}
+                                    style={{ backgroundColor: "#198754" }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      if (!user) {
+                                        toast.error("Lütfen satın almadan önce giriş yapın veya kayıt olun.");
+                                        window.location.href = "/auth/login";
+                                      } else {
+                                        window.open(pub.paymentLink as string, '_blank');
+                                      }
+                                    }}
+                                  >
+                                    <CheckCircle size={16} />
+                                    <span>Satın Al / Kaydol</span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    className={styles.addToCartBtn}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      addToCart({
+                                        id: pub.id,
+                                        title: pub.title,
+                                        price: pub.price,
+                                        image: pub.image,
+                                        isCouponEligible: pub.isCouponEligible
+                                      });
+                                    }}
+                                  >
+                                    <ShoppingCart size={16} />
+                                    <span>Sepete Ekle</span>
+                                  </button>
+                                )}
                               </div>
                             </div>
                           </div>

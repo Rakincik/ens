@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 
     await writeFile(filePath, buffer);
 
-    const fileUrl = `/uploads/${fileName}`;
+    const fileUrl = `/api/public/uploads/${fileName}`;
 
     return NextResponse.json({
       message: "Dosya başarıyla yüklendi.",

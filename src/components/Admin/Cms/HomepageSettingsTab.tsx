@@ -48,7 +48,7 @@ export default function HomepageSettingsTab({ data, onChange, onSave, saving }: 
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
         <div>
           <h3 style={{ fontSize: "18px", fontWeight: 700, color: "var(--color-primary)" }}>Anasayfa Yönetimi</h3>
           <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Hero slider ve istatistik bölümlerini düzenleyin.</p>
@@ -86,15 +86,17 @@ export default function HomepageSettingsTab({ data, onChange, onSave, saving }: 
                 </button>
               </div>
               
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "24px" }}>
-                <ImageUploader 
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "24px" }}>
+                <div style={{ flex: "1 1 250px" }}>
+                  <ImageUploader 
                   label="Arkaplan Görseli" 
                   value={slide.image || ""} 
                   onChange={(url) => handleUpdateSlider(i, "image", url)} 
                   recommendedSize="1920x800px" 
                 />
+                </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <div style={{ flex: "2 1 300px", display: "flex", flexDirection: "column", gap: "12px" }}>
                   <div>
                     <label style={{ fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "4px" }}>Ana Başlık</label>
                     <input type="text" value={slide.title} onChange={e => handleUpdateSlider(i, "title", e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid var(--border-color)" }} placeholder="Örn: Türkçe ÖABT Kampı..." />
@@ -103,7 +105,7 @@ export default function HomepageSettingsTab({ data, onChange, onSave, saving }: 
                     <label style={{ fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "4px" }}>Alt Açıklama</label>
                     <input type="text" value={slide.subtitle} onChange={e => handleUpdateSlider(i, "subtitle", e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid var(--border-color)" }} placeholder="Örn: Sınava hazırlanmanın en iyi yolu..." />
                   </div>
-                  <div style={{ display: "flex", gap: "12px" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
                     <div style={{ flex: 1 }}>
                       <label style={{ fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "4px" }}>Buton Metni</label>
                       <input type="text" value={slide.buttonText} onChange={e => handleUpdateSlider(i, "buttonText", e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid var(--border-color)" }} placeholder="Örn: Hemen İncele" />

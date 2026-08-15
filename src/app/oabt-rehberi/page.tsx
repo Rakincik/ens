@@ -5,11 +5,13 @@ import styles from "../Home.module.css";
 
 export default function OabtGuidancePage() {
   const examStructure = [
-    { section: "Dil Bilgisi ve Fonetik", count: "16 Soru", weight: "%20", desc: "Ses bilgisi, şekil bilgisi, cümle bilgisi ve kelime grupları." },
-    { section: "Okuma ve Yazma Eğitimi (Anlam)", count: "12 Soru", weight: "%15", desc: "Okuma teknikleri, yazma türleri, kelime hazinesi ve anlam bilgisi." },
-    { section: "Türk Edebiyatı (Halk, Divan, Yeni)", count: "22 Soru", weight: "%27.5", desc: "Dönem özellikleri, yazar-eser eşleştirmeleri, edebi akımlar ve şiir tahlilleri." },
-    { section: "Dil Bilimi ve Çocuk Edebiyatı", count: "10 Soru", weight: "%12.5", desc: "Dil bilimi kuramları, dünya dilleri ve çocuk edebiyatı eserleri/tarihçesi." },
-    { section: "Alan Eğitimi (Metotlar)", count: "15 Soru", weight: "%25", desc: "Türkçe öğretim programı, öğrenme alanları, ölçme-değerlendirme yöntemleri." }
+    { section: "Anlama ve Anlatma Teknikleri", count: "16 Soru", weight: "%32", desc: "Dinleme, konuşma, okuma ve yazma eğitimi" },
+    { section: "Dil Bilgisi ve Dil Bilimi", count: "12 Soru", weight: "%24", desc: "Ses bilgisi, şekil bilgisi, cümle bilgisi, kelime grupları ve dil bilim" },
+    { section: "Çocuk Edebiyatı", count: "3 Soru", weight: "%6", desc: "Çocuk edebiyatı eserleri/tarihçesi" },
+    { section: "Türk Halk Edebiyatı", count: "5 Soru", weight: "%10", desc: "Anonim, Aşık ve Tasavvuf Türk edebiyatı özellikleri" },
+    { section: "Eski Türk Edebiyatı", count: "5 Soru", weight: "%10", desc: "Beyit şerhleri, söz sanatları, yazar-eser eşleştirmeleri" },
+    { section: "Yeni Türk Edebiyatı", count: "5 Soru", weight: "%10", desc: "Dönem özellikleri, yazar-eser eşleştirmeleri" },
+    { section: "Edebiyat Bilgi ve Kuramları", count: "4 Soru", weight: "%8", desc: "Edebi akımlar/kuramlar, dünya edebiyatı ve şiir tahlilleri" }
   ];
 
   return (
@@ -37,7 +39,7 @@ export default function OabtGuidancePage() {
                 gap: "8px"
               }}>
                 <BarChart2 size={20} style={{ color: "var(--color-accent)" }} />
-                <span>ÖABT Türkçe Soru Dağılımı (75 Soru)</span>
+                <span>ÖABT Türkçe Soru Dağılımı (50 Soru)</span>
               </h2>
 
               <div style={{ overflowX: "auto" }}>
@@ -104,9 +106,9 @@ export default function OabtGuidancePage() {
                     flexShrink: 0
                   }}>1</div>
                   <div>
-                    <h4 style={{ fontSize: "15px", fontWeight: 600, color: "var(--color-primary)", marginBottom: "4px" }}>Alan Eğitimini Hafife Almayın</h4>
+                    <h4 style={{ fontSize: "15px", fontWeight: 600, color: "var(--color-primary)", marginBottom: "4px" }}>Canlı Dersleri ve Tekrar Videolarını Sınırsız Avantaja Çevirin</h4>
                     <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.6" }}>
-                      Sınavın %25&apos;ini oluşturan 15 soruluk Alan Eğitimi kısmı, genellikle en belirleyici bölümdür. Öğretim programı kazanımlarına ve öğrenme alanları metotlarına eksiksiz hakim olmalısınız.
+                      Uzaktan eğitimin en büyük gücü esnekliktir. Kaçırdığınız ya da zorlandığınız konuları dilediğiniz kadar tekrar izleyebilme imkanınızı en verimli şekilde kullanın. Kurumumuzun akıllı asistan sistemi ve sınırsız video tekrar paketiyle eksik olduğunuz konuları pekiştirerek kalıcı öğrenme sağlayın.
                     </p>
                   </div>
                 </li>
@@ -126,9 +128,9 @@ export default function OabtGuidancePage() {
                     flexShrink: 0
                   }}>2</div>
                   <div>
-                    <h4 style={{ fontSize: "15px", fontWeight: 600, color: "var(--color-primary)", marginBottom: "4px" }}>Düzenli Şiir Tahlili Yapın</h4>
+                    <h4 style={{ fontSize: "15px", fontWeight: 600, color: "var(--color-primary)", marginBottom: "4px" }}>Alanın En Büyüğü Olan Yayınevimizin Basılı Kitaplarıyla Sağlam Adımlar Atın</h4>
                     <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.6" }}>
-                      Divan ve Eski Türk edebiyatı sorularında aruz vezni, edebi sanatlar ve beyit şerhleri önemli yer tutar. Her gün en az 3-4 beyti tahlil etmek kelime dağarcığınızı ve şerh kabiliyetinizi canlı tutar.
+                      Sadece dijitalde değil, basılı yayıncılıkta da alanın zirvesindeyiz. Yılların tecrübesiyle hazırladığımız ve ÖABT Türkçe&apos;nin referans kitabı kabul edilen güçlü yayın portföyümüzdeki soru bankaları ve konu anlatımlı eserlerimizle çalışın. Çözemediğiniz veya yanlış yaptığınız her soruyu kesip bir deftere yapıştırarak, yayınevimizin uzman hocalarının kaleme aldığı detaylı çözümleriyle birlikte sınav gününe kadar en büyük yardımcınız olacak kusursuz bir &apos;Hata Defteri&apos; oluşturun.
                     </p>
                   </div>
                 </li>
@@ -151,6 +153,28 @@ export default function OabtGuidancePage() {
                     <h4 style={{ fontSize: "15px", fontWeight: 600, color: "var(--color-primary)", marginBottom: "4px" }}>Hatalarınızı Analiz Edin</h4>
                     <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.6" }}>
                       Çözdüğünüz denemelerde yanlış yaptığınız her soruyu kesip bir deftere yapıştırın ve doğru çözümünü altına yazın. Sınava son bir ay kala en büyük yardımcınız bu &apos;Hata Defteri&apos; olacaktır.
+                    </p>
+                  </div>
+                </li>
+
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
+                  <div style={{
+                    width: "28px",
+                    height: "28px",
+                    borderRadius: "50%",
+                    backgroundColor: "var(--color-primary-light)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "var(--color-accent)",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                    flexShrink: 0
+                  }}>4</div>
+                  <div>
+                    <h4 style={{ fontSize: "15px", fontWeight: 600, color: "var(--color-primary)", marginBottom: "4px" }}>Türkiye Geneli Deneme Kamplarıyla Sınav Provası Yapın</h4>
+                    <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.6" }}>
+                      Gerçek sınav atmosferini yakalamak, zaman yönetimi ve stres kontrolü için hayatidir. Kurumumuz tarafından düzenlenen Türkiye Geneli ÖABT Türkçe Deneme Sınavları ve detaylı karne analizleri ile eksiklerinizi zamanında fark edin, sınav günü karşınıza çıkabilecek tüm sürprizlere bizimle hazırlanın.
                     </p>
                   </div>
                 </li>

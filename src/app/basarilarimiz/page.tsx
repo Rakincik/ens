@@ -30,9 +30,7 @@ export default function AchievementsPage() {
     stat3Label: "Atanan Türkçe Öğretmeni"
   });
   
-  // Interactive Filters
-  const [yearFilter, setYearFilter] = useState("ALL");
-  const [rankFilter, setRankFilter] = useState("ALL");
+
   
   // Modal Preview Image
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -62,24 +60,9 @@ export default function AchievementsPage() {
     fetchPageData();
   }, []);
 
-  const getRankNumber = (rankStr: string) => {
-    const match = rankStr.match(/\d+/);
-    return match ? parseInt(match[0], 10) : 999;
-  };
 
-  const filteredAchievements = achievements.filter((ach) => {
-    // Filter by year
-    if (yearFilter !== "ALL" && !ach.year.includes(yearFilter)) {
-      return false;
-    }
-    // Filter by rank category
-    if (rankFilter !== "ALL") {
-      const num = getRankNumber(ach.rank);
-      if (rankFilter === "TOP10" && num > 10) return false;
-      if (rankFilter === "TOP100" && num > 100) return false;
-    }
-    return true;
-  });
+
+  const filteredAchievements = achievements;
 
   return (
     <>
@@ -97,119 +80,9 @@ export default function AchievementsPage() {
               <p className={styles.sectionDesc}>{pageConfig.subtitle}</p>
             </div>
 
-            {/* General Highlights Stats Panel */}
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              gap: "24px",
-              marginBottom: "48px",
-              background: "var(--bg-secondary)",
-              border: "1px solid var(--border-color)",
-              borderRadius: "var(--radius-lg)",
-              padding: "28px 32px",
-              boxShadow: "var(--shadow-md)",
-              position: "relative",
-              zIndex: 5
-            }}>
-              <div style={{ textAlign: "center", padding: "8px 0" }}>
-                <div style={{ 
-                  fontSize: "36px", 
-                  fontWeight: 800, 
-                  background: "linear-gradient(135deg, var(--color-accent) 0%, #d4af37 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent"
-                }}>{pageConfig.stat1Number}</div>
-                <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-secondary)", marginTop: "6px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{pageConfig.stat1Label}</div>
-              </div>
-              <div style={{ 
-                textAlign: "center", 
-                padding: "8px 0",
-                borderLeft: "1.5px solid var(--border-color)", 
-                borderRight: "1.5px solid var(--border-color)" 
-              }} className="stats-middle-col">
-                <div style={{ 
-                  fontSize: "36px", 
-                  fontWeight: 800, 
-                  background: "linear-gradient(135deg, var(--color-accent) 0%, #d4af37 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent"
-                }}>{pageConfig.stat2Number}</div>
-                <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-secondary)", marginTop: "6px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{pageConfig.stat2Label}</div>
-              </div>
-              <div style={{ textAlign: "center", padding: "8px 0" }}>
-                <div style={{ 
-                  fontSize: "36px", 
-                  fontWeight: 800, 
-                  background: "linear-gradient(135deg, var(--color-accent) 0%, #d4af37 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent"
-                }}>{pageConfig.stat3Number}</div>
-                <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-secondary)", marginTop: "6px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{pageConfig.stat3Label}</div>
-              </div>
-            </div>
 
-            {/* Dynamic Filter Controls */}
-            <div style={{
-              display: "flex",
-              justifyContent: "center",
-              flexWrap: "wrap",
-              gap: "16px",
-              marginBottom: "40px"
-            }}>
-              {/* Year Filters */}
-              <div style={{ display: "flex", gap: "4px", backgroundColor: "var(--bg-secondary)", padding: "4px", borderRadius: "var(--radius-full)", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
-                {[
-                  { value: "ALL", label: "Tüm Yıllar" },
-                  { value: "2025", label: "2025 KPSS" },
-                  { value: "2024", label: "2024 KPSS" }
-                ].map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setYearFilter(opt.value)}
-                    style={{
-                      padding: "8px 18px",
-                      fontSize: "13px",
-                      fontWeight: 700,
-                      borderRadius: "var(--radius-full)",
-                      border: "none",
-                      backgroundColor: yearFilter === opt.value ? "var(--color-primary)" : "transparent",
-                      color: yearFilter === opt.value ? "white" : "var(--text-secondary)",
-                      cursor: "pointer",
-                      transition: "all var(--transition-fast)"
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
 
-              {/* Rank Filters */}
-              <div style={{ display: "flex", gap: "4px", backgroundColor: "var(--bg-secondary)", padding: "4px", borderRadius: "var(--radius-full)", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
-                {[
-                  { value: "ALL", label: "Tüm Dereceler" },
-                  { value: "TOP10", label: "İlk 10 Derece" },
-                  { value: "TOP100", label: "İlk 100 Derece" }
-                ].map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setRankFilter(opt.value)}
-                    style={{
-                      padding: "8px 18px",
-                      fontSize: "13px",
-                      fontWeight: 700,
-                      borderRadius: "var(--radius-full)",
-                      border: "none",
-                      backgroundColor: rankFilter === opt.value ? "var(--color-primary)" : "transparent",
-                      color: rankFilter === opt.value ? "white" : "var(--text-secondary)",
-                      cursor: "pointer",
-                      transition: "all var(--transition-fast)"
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+
 
             {/* Testimonials Loading / Grid */}
             {loading ? (

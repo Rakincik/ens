@@ -38,7 +38,7 @@ export default function LegalSettingsTab({ data, onChange, onSave, saving }: Leg
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
         <div>
           <h3 style={{ fontSize: "18px", fontWeight: 700, color: "var(--color-primary)" }}>Yasal Metinler & Destek</h3>
           <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>S.S.S. (Sıkça Sorulan Sorular) ve sözleşme metinlerini düzenleyin.</p>

@@ -12,7 +12,12 @@ interface Category {
   orderIndex: number;
 }
 
-export default function CategoriesTab() {
+interface CategoriesTabProps {
+  categoryType?: "COURSE" | "PUBLICATION";
+  title?: string;
+}
+
+export default function CategoriesTab({ categoryType = "COURSE", title = "Kategori Yönetimi" }: CategoriesTabProps) {
   const toast = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +35,7 @@ export default function CategoriesTab() {
   const loadCategories = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/admin/categories");
+      const res = await fetch(`/api/admin/categories?type=${categoryType}`);
       if (res.ok) {
         const data = await res.json();
         setCategories(data.categories || []);
@@ -54,7 +59,7 @@ export default function CategoriesTab() {
       const res = await fetch("/api/admin/categories", {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(selectedCat)
+        body: JSON.stringify({ ...selectedCat, type: categoryType })
       });
 
       const data = await res.json();
@@ -101,7 +106,7 @@ export default function CategoriesTab() {
   return (
     <div className="animate-fade-in">
       <div className={styles.headerRow}>
-        <h2 className={styles.viewTitle}>Kategori Yönetimi</h2>
+        <h2 className={styles.viewTitle}>{title}</h2>
         <button 
           className={styles.btn}
           onClick={() => {

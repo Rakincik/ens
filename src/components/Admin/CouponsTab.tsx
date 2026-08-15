@@ -18,6 +18,7 @@ interface Coupon {
   code: string;
   discountType: string;
   discountValue: number;
+  courseId?: string | null;
   isActive: boolean;
   startDate: string | null;
   expiryDate: string | null;
@@ -146,29 +147,38 @@ export default function CouponsTab({ isInfluencerMode = false }: CouponsTabProps
 
   return (
     <div className="animate-fade-in">
-      <div className={styles.headerRow}>
-        <h2 className={styles.viewTitle}>{isInfluencerMode ? "Influencer Marketing" : "İndirim Kuponları"}</h2>
-        <button 
-          className={styles.btn}
-          onClick={() => {
-            setSelectedCoupon({ 
-              code: "", 
-              discountType: "PERCENTAGE", 
-              discountValue: 10, 
-              courseId: "", 
-              isActive: true,
-              startDate: null,
-              expiryDate: null,
-              usageLimit: null,
-              influencerName: isInfluencerMode ? "" : null,
-              influencerEmail: isInfluencerMode ? "" : null
-            });
-            setShowCouponModal(true);
-          }}
-        >
-          <Plus size={16} />
-          <span>{isInfluencerMode ? "Influencer Kuponu Oluştur" : "Kupon Oluştur"}</span>
-        </button>
+      <div className={styles.tabHeader}>
+        <div>
+          <h2 style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-primary)", margin: 0 }}>
+            {isInfluencerMode ? "Influencer Marketing" : "İndirim Kuponları"}
+          </h2>
+          <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginTop: "8px", marginBottom: 0 }}>
+            {isInfluencerMode ? "Influencer işbirlikleri ve performans takibi" : "Satışları artırmak için promosyon kuponları oluşturun."}
+          </p>
+        </div>
+        <div className={styles.tabHeaderButtons}>
+          <button 
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "10px 16px", backgroundColor: "var(--color-primary-light)", color: "var(--color-primary)", border: "none", borderRadius: "8px", fontWeight: 600, cursor: "pointer", fontSize: "14px", transition: "all 0.2s" }}
+            onClick={() => {
+              setSelectedCoupon({ 
+                code: "", 
+                discountType: "PERCENTAGE", 
+                discountValue: 10, 
+                courseId: "", 
+                isActive: true,
+                startDate: null,
+                expiryDate: null,
+                usageLimit: null,
+                influencerName: isInfluencerMode ? "" : null,
+                influencerEmail: isInfluencerMode ? "" : null
+              });
+              setShowCouponModal(true);
+            }}
+          >
+            <Plus size={18} />
+            <span>{isInfluencerMode ? "Influencer Ekle" : "Kupon Oluştur"}</span>
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -176,125 +186,107 @@ export default function CouponsTab({ isInfluencerMode = false }: CouponsTabProps
           <div className={styles.spinner} style={{ width: "32px", height: "32px" }} />
         </div>
       ) : (
-        <div className={styles.tableCard}>
-          <div className={styles.tableContainer}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Kupon Kodu</th>
-                  {isInfluencerMode && <th>Influencer</th>}
-                  <th>Türü</th>
-                  <th>Değeri</th>
-                  <th>Kullanım</th>
-                  <th>Geçerlilik</th>
-                  <th>Durum</th>
-                  <th>İşlemler</th>
-                </tr>
-              </thead>
-              <tbody>
-                {coupons.length === 0 ? (
-                  <tr>
-                    <td colSpan={isInfluencerMode ? 8 : 7} style={{ textAlign: "center", padding: "20px", color: "var(--text-muted)" }}>
-                      Henüz kupon bulunmuyor.
-                    </td>
-                  </tr>
-                ) : coupons.map((coupon) => {
-                  const associatedCourse = courses.find(c => c.id === coupon.courseId);
-                  
-                  return (
-                    <tr key={coupon.id}>
-                      <td style={{ fontWeight: 700, fontFamily: "monospace", color: "var(--color-accent)" }}>{coupon.code}</td>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "24px" }}>
+          {coupons.length === 0 ? (
+            <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "40px", backgroundColor: "var(--bg-secondary)", borderRadius: "12px", border: "1px dashed var(--border-color)", color: "var(--text-muted)" }}>
+              Henüz kupon bulunmuyor. Sağ üstteki butondan yeni kupon oluşturabilirsiniz.
+            </div>
+          ) : coupons.map((coupon) => {
+            const isPercent = coupon.discountType === "PERCENTAGE";
+            
+            return (
+              <div key={coupon.id} style={{ display: "flex", backgroundColor: "#fff", borderRadius: "12px", border: "1px solid var(--border-color)", overflow: "hidden", boxShadow: "0 2px 4px rgba(0,0,0,0.02)", position: "relative", transition: "all 0.2s" }}>
+                {/* Left side: Ticket Value */}
+                <div style={{ width: "100px", backgroundColor: "var(--color-primary-light)", borderRight: "2px dashed var(--border-color)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "16px", color: "var(--color-primary)", flexShrink: 0 }}>
+                  <span style={{ fontSize: "24px", fontWeight: 800 }}>
+                    {isPercent ? `%${coupon.discountValue}` : `₺${coupon.discountValue}`}
+                  </span>
+                  <span style={{ fontSize: "11px", textTransform: "uppercase", fontWeight: 700, marginTop: "4px", letterSpacing: "0.5px" }}>İndirim</span>
+                </div>
+                
+                {/* Right side: Ticket Details */}
+                <div style={{ flex: 1, padding: "16px", display: "flex", flexDirection: "column", gap: "12px", minWidth: 0 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div style={{ overflow: "hidden" }}>
+                      <div style={{ fontSize: "16px", fontWeight: 800, color: "var(--color-accent)", letterSpacing: "1px", fontFamily: "monospace", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {coupon.code}
+                      </div>
                       {isInfluencerMode && (
-                        <td>
-                          <div style={{ fontWeight: 600 }}>{coupon.influencerName}</div>
-                          <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>{coupon.influencerEmail}</div>
-                        </td>
+                        <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)", marginTop: "4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {coupon.influencerName}
+                        </div>
                       )}
-                      <td>{coupon.discountType === "PERCENTAGE" ? "Yüzdesel (%)" : "Sabit Tutar (TL)"}</td>
-                      <td style={{ fontWeight: 600 }}>
-                        {coupon.discountType === "PERCENTAGE" 
-                          ? `%${coupon.discountValue}` 
-                          : `${coupon.discountValue} TL`}
-                      </td>
-                      <td>
-                        {coupon.usageCount} {coupon.usageLimit ? `/ ${coupon.usageLimit}` : ""}
-                      </td>
-                      <td>
-                        <div style={{ fontSize: "12px" }}>
-                          {coupon.startDate ? new Date(coupon.startDate).toLocaleDateString("tr-TR") : "Belirsiz"} - 
-                          {coupon.expiryDate ? new Date(coupon.expiryDate).toLocaleDateString("tr-TR") : "Süresiz"}
-                        </div>
-                      </td>
-                      <td>
-                        <label className={styles.switchLabel}>
-                          <input 
-                            type="checkbox" 
-                            className={styles.switchInput}
-                            checked={coupon.isActive}
-                            onChange={() => handleToggleCouponActive(coupon)}
-                          />
-                          <span className={styles.switchSlider} />
-                        </label>
-                      </td>
-                      <td>
-                        <div style={{ display: "flex", gap: "8px" }}>
-                          <button 
-                            className={`${styles.btn} ${styles.btnOutline}`}
-                            style={{ padding: "6px" }}
-                            onClick={() => setStatsCoupon(coupon)}
-                            aria-label="Performans Göster"
-                            title="Performans Grafikleri"
-                          >
-                            <BarChart2 size={14} />
-                          </button>
-                          <button 
-                            className={`${styles.btn} ${styles.btnOutline}`}
-                            style={{ padding: "6px" }}
-                            onClick={() => {
-                              setSelectedCoupon(coupon);
-                              setShowCouponModal(true);
-                            }}
-                            aria-label="Düzenle"
-                          >
-                            <Edit size={14} />
-                          </button>
-                          <button 
-                            className={`${styles.btn} ${styles.btnDanger}`}
-                            style={{ padding: "6px" }}
-                            onClick={() => setCouponToDelete(coupon.id)}
-                            aria-label="Sil"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                    <label className={styles.switchLabel} style={{ flexShrink: 0 }}>
+                      <input 
+                        type="checkbox" 
+                        className={styles.switchInput}
+                        checked={coupon.isActive}
+                        onChange={() => handleToggleCouponActive(coupon)}
+                      />
+                      <span className={styles.switchSlider} />
+                    </label>
+                  </div>
+                  
+                  <div style={{ display: "flex", gap: "16px", fontSize: "12px", color: "var(--text-muted)", marginTop: "auto" }}>
+                    <div>
+                      <div style={{ fontWeight: 600, color: "var(--text-secondary)" }}>Kullanım</div>
+                      <div>{coupon.usageCount} {coupon.usageLimit ? `/ ${coupon.usageLimit}` : " (Sınır yok)"}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: "var(--text-secondary)" }}>Geçerlilik</div>
+                      <div>{coupon.expiryDate ? new Date(coupon.expiryDate).toLocaleDateString("tr-TR") : "Süresiz"}</div>
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", borderTop: "1px solid var(--border-color)", paddingTop: "12px", marginTop: "4px" }}>
+                    <button 
+                      className={`${styles.iconBtn} ${styles.iconBtnMove}`} 
+                      onClick={() => setStatsCoupon(coupon)} 
+                      title="Performans Grafikleri"
+                    >
+                      <BarChart2 size={16} />
+                    </button>
+                    <button 
+                      className={`${styles.iconBtn} ${styles.iconBtnMove}`} 
+                      onClick={() => { setSelectedCoupon(coupon); setShowCouponModal(true); }} 
+                      title="Düzenle"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button 
+                      className={`${styles.iconBtn} ${styles.iconBtnDelete}`} 
+                      onClick={() => setCouponToDelete(coupon.id)} 
+                      title="Sil"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
       {/* MODAL: KUPON EKLE / DÜZENLE */}
       {showCouponModal && selectedCoupon && (
         <div className={styles.modalOverlay} onClick={() => setShowCouponModal(false)}>
-          <div className={styles.modal} style={{ maxWidth: "550px", overflow: "visible" }} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
+          <div className={styles.modal} style={{ maxWidth: "550px", width: "95%", maxHeight: "90vh", display: "flex", flexDirection: "column", borderRadius: "20px", overflow: "hidden" }} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader} style={{ borderRadius: "20px 20px 0 0" }}>
               <h3 className={styles.modalTitle}>{selectedCoupon.id ? "Kuponu Düzenle" : "Yeni İndirim Kuponu Oluştur"}</h3>
               <button className={styles.modalCloseBtn} onClick={() => setShowCouponModal(false)}>
                 <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={handleCouponSubmit}>
-              <div className={styles.modalBody} style={{ overflow: "visible" }}>
+            <form onSubmit={handleCouponSubmit} style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
+              <div className={styles.modalBody} style={{ overflowY: "auto", overflowX: "hidden", padding: "16px", flex: 1 }}>
                 <div className={styles.formGroup}>
                   <label className={styles.label}>Kupon Kodu (Örn: HOCA20)</label>
                   <input
                     className={styles.input}
-                    style={{ textTransform: "uppercase" }}
+                    style={{ textTransform: "uppercase", width: "100%", boxSizing: "border-box" }}
                     type="text"
                     value={selectedCoupon.code || ""}
                     onChange={(e) => {
@@ -309,21 +301,23 @@ export default function CouponsTab({ isInfluencerMode = false }: CouponsTabProps
                 </div>
 
                 {isInfluencerMode && (
-                  <div style={{ display: "flex", gap: "16px", marginTop: "16px" }}>
-                    <div className={styles.formGroup} style={{ flex: 1 }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "16px" }}>
+                    <div className={styles.formGroup} style={{ flex: "1 1 200px" }}>
                       <label className={styles.label}>Influencer Adı Soyadı</label>
                       <input
-                        className={styles.input}
+                        className={styles.premiumInput || styles.input}
+                        style={{ width: "100%", boxSizing: "border-box" }}
                         type="text"
                         value={selectedCoupon.influencerName || ""}
                         onChange={(e) => setSelectedCoupon({ ...selectedCoupon, influencerName: e.target.value })}
                         required={isInfluencerMode}
                       />
                     </div>
-                    <div className={styles.formGroup} style={{ flex: 1 }}>
+                    <div className={styles.formGroup} style={{ flex: "1 1 200px" }}>
                       <label className={styles.label}>Influencer E-posta</label>
                       <input
-                        className={styles.input}
+                        className={styles.premiumInput || styles.input}
+                        style={{ width: "100%", boxSizing: "border-box" }}
                         type="email"
                         value={selectedCoupon.influencerEmail || ""}
                         onChange={(e) => setSelectedCoupon({ ...selectedCoupon, influencerEmail: e.target.value })}
@@ -333,24 +327,26 @@ export default function CouponsTab({ isInfluencerMode = false }: CouponsTabProps
                   </div>
                 )}
 
-                <div style={{ display: "flex", gap: "16px", marginTop: "16px" }}>
-                  <div className={styles.formGroup} style={{ flex: 1 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "16px" }}>
+                  <div className={styles.formGroup} style={{ flex: "1 1 200px" }}>
                     <label className={styles.label}>İndirim Türü</label>
-                    <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
-                      <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
+                    <div style={{ display: "flex", gap: "16px", marginTop: "8px" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px" }}>
                         <input 
                           type="radio" 
                           name="discountType" 
                           value="PERCENTAGE" 
+                          style={{ width: "16px", height: "16px", accentColor: "var(--color-accent)" }}
                           checked={selectedCoupon.discountType === "PERCENTAGE"}
                           onChange={() => setSelectedCoupon({ ...selectedCoupon, discountType: "PERCENTAGE" })}
                         /> Yüzdesel (%)
                       </label>
-                      <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px" }}>
                         <input 
                           type="radio" 
                           name="discountType" 
                           value="FIXED" 
+                          style={{ width: "16px", height: "16px", accentColor: "var(--color-accent)" }}
                           checked={selectedCoupon.discountType === "FIXED"}
                           onChange={() => setSelectedCoupon({ ...selectedCoupon, discountType: "FIXED" })}
                         /> Sabit Tutar
@@ -358,10 +354,11 @@ export default function CouponsTab({ isInfluencerMode = false }: CouponsTabProps
                     </div>
                   </div>
 
-                  <div className={styles.formGroup} style={{ flex: 1 }}>
+                  <div className={styles.formGroup} style={{ flex: "1 1 200px" }}>
                     <label className={styles.label}>İndirim Değeri</label>
                     <input
-                      className={styles.input}
+                      className={styles.premiumInput || styles.input}
+                      style={{ width: "100%", boxSizing: "border-box" }}
                       type="number"
                       value={selectedCoupon.discountValue !== undefined ? selectedCoupon.discountValue : ""}
                       onChange={(e) => setSelectedCoupon({ ...selectedCoupon, discountValue: parseFloat(e.target.value) })}
@@ -370,11 +367,11 @@ export default function CouponsTab({ isInfluencerMode = false }: CouponsTabProps
                   </div>
                 </div>
 
-                <div className={styles.formGroup} style={{ position: "relative" }}>
+                <div className={styles.formGroup} style={{ position: "relative", marginTop: "16px" }}>
                   <label className={styles.label}>Uygulanacağı Ders Paketi (Boş bırakılırsa tüm sepete uygulanır)</label>
                   <div 
-                    className={styles.input} 
-                    style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "white" }}
+                    className={styles.premiumInput || styles.input} 
+                    style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "white", width: "100%", boxSizing: "border-box" }}
                     onClick={() => setIsCourseDropdownOpen(!isCourseDropdownOpen)}
                   >
                     <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -427,11 +424,12 @@ export default function CouponsTab({ isInfluencerMode = false }: CouponsTabProps
                   )}
                 </div>
 
-                <div style={{ display: "flex", gap: "16px" }}>
-                  <div className={styles.formGroup} style={{ flex: 1 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "16px" }}>
+                  <div className={styles.formGroup} style={{ flex: "1 1 100%" }}>
                     <label className={styles.label}>Kullanım Limiti (Opsiyonel)</label>
                     <input
-                      className={styles.input}
+                      className={styles.premiumInput || styles.input}
+                      style={{ width: "100%", boxSizing: "border-box" }}
                       type="number"
                       placeholder="Sınırsız"
                       value={selectedCoupon.usageLimit || ""}
@@ -440,20 +438,22 @@ export default function CouponsTab({ isInfluencerMode = false }: CouponsTabProps
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "16px" }}>
-                  <div className={styles.formGroup} style={{ flex: 1 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "16px" }}>
+                  <div className={styles.formGroup} style={{ flex: "1 1 200px" }}>
                     <label className={styles.label}>Başlangıç Tarihi (Opsiyonel)</label>
                     <input
-                      className={styles.input}
+                      className={styles.premiumInput || styles.input}
+                      style={{ width: "100%", boxSizing: "border-box" }}
                       type="date"
                       value={selectedCoupon.startDate ? selectedCoupon.startDate.split("T")[0] : ""}
                       onChange={(e) => setSelectedCoupon({ ...selectedCoupon, startDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
                     />
                   </div>
-                  <div className={styles.formGroup} style={{ flex: 1 }}>
+                  <div className={styles.formGroup} style={{ flex: "1 1 200px" }}>
                     <label className={styles.label}>Son Kullanma Tarihi (Opsiyonel)</label>
                     <input
-                      className={styles.input}
+                      className={styles.premiumInput || styles.input}
+                      style={{ width: "100%", boxSizing: "border-box" }}
                       type="date"
                       value={selectedCoupon.expiryDate ? selectedCoupon.expiryDate.split("T")[0] : ""}
                       onChange={(e) => setSelectedCoupon({ ...selectedCoupon, expiryDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
@@ -462,7 +462,10 @@ export default function CouponsTab({ isInfluencerMode = false }: CouponsTabProps
                 </div>
               </div>
 
-              <div className={styles.modalFooter}>
+              <div 
+                className={styles.modalFooter} 
+                style={{ backgroundColor: "#ffffff", borderTop: "1px solid var(--border-color, #e2e8f0)", padding: "16px", marginTop: "auto" }}
+              >
                 <button 
                   className={`${styles.btn} ${styles.btnOutline}`} 
                   type="button" 

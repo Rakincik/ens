@@ -27,7 +27,8 @@ export async function GET() {
     const settings = await prisma.contentSettings.findMany();
     const formattedSettings = settings.reduce((acc: any, current) => {
       try {
-        acc[current.key] = JSON.parse(current.value);
+        let val = current.value;
+        acc[current.key] = JSON.parse(val);
       } catch (e) {
         acc[current.key] = current.value;
       }
@@ -62,7 +63,9 @@ export async function POST(request: Request) {
     }
 
     // Değeri JSON string'e dönüştür
-    const valueString = typeof value === "string" ? value : JSON.stringify(value);
+    let valueString = typeof value === "string" ? value : JSON.stringify(value);
+    // Cleanup any corrupted domain links that were accidentally saved
+    valueString = valueString.replace(/https:\/\/toa\.muro\.click/g, "");
 
     const setting = await prisma.contentSettings.upsert({
       where: { key },

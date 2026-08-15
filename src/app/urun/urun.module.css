@@ -88,6 +88,31 @@
   line-height: 1.7;
 }
 
+.description ul {
+  list-style-type: disc;
+  padding-left: 24px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.description ol {
+  list-style-type: decimal;
+  padding-left: 24px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.description li {
+  margin-bottom: 6px;
+  display: list-item;
+}
+
+.description p {
+  margin: 0 !important;
+  padding: 0 !important;
+  color: var(--text-primary);
+}
+
 .priceSection {
   padding: 24px 0;
   border-top: 1px solid var(--border-color);
@@ -159,4 +184,14 @@
 
 .featureIcon {
   color: var(--color-success);
+}
+
+@media (max-width: 600px) {
+  .actionRow {
+    flex-direction: column;
+  }
+  .addToCartBtn {
+    width: 100%;
+    justify-content: center;
+  }
 }

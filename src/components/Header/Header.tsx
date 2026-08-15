@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { ShoppingBag, Menu, X, User, LogOut, LayoutDashboard } from "lucide-react";
+import { ShoppingBag, Menu, X, User, LogOut, LayoutDashboard, PlayCircle } from "lucide-react";
 import styles from "./Header.module.css";
 // Bu context dosyalarını Task 4 ve 5'te tanımlayacağız
 import { useAuth } from "@/contexts/AuthContext";
@@ -63,6 +63,7 @@ export default function Header() {
 
   const navLinks = [
     { name: "Anasayfa", path: "/" },
+    { name: "Hakkımızda", path: "/hakkimizda" },
     { name: "Eğitimlerimiz", path: "/egitimlerimiz" },
     { name: "Yayınlarımız", path: "/yayinlar" },
     { name: "Kadromuz", path: "/kadromuz" },
@@ -75,7 +76,7 @@ export default function Header() {
 
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ""} ${mobileMenuOpen ? styles.mobileMenuOpen : ""}`}>
-      <div className={`${styles.container} container`}>
+      <div className={styles.container}>
         {/* Logo */}
         <Link href="/" className={styles.logoArea}>
           <div className={styles.logoWrapper}>
@@ -109,22 +110,58 @@ export default function Header() {
 
         {/* Actions Area */}
         <div className={styles.actions}>
-          {/* Cart Button */}
-          <button 
-            className={styles.cartBtn} 
-            onClick={() => setIsCartOpen(true)}
-            aria-label="Sepeti Aç"
-          >
-            <ShoppingBag size={22} />
-            {mounted && totalCartCount > 0 && (
-              <span className={styles.cartBadge}>{totalCartCount}</span>
-            )}
-          </button>
+          {/* Cart Button (Temporarily Hidden) */}
+          {false && (
+            <button 
+              className={styles.cartBtn} 
+              onClick={() => setIsCartOpen(true)}
+              aria-label="Sepeti Aç"
+            >
+              <ShoppingBag size={22} />
+              {mounted && totalCartCount > 0 && (
+                <span className={styles.cartBadge}>{totalCartCount}</span>
+              )}
+            </button>
+          )}
 
-          {/* Auth Actions (Desktop) */}
-          <div style={{ display: "flex", gap: "10px" }} className={styles.nav}>
+          {/* Auth Actions */}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <a
+              href="https://online.turkceoabtdeyiz.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 20px",
+                borderRadius: "30px",
+                background: "linear-gradient(135deg, #b89047, #d4af37)",
+                color: "#ffffff",
+                fontWeight: 600,
+                fontSize: "14px",
+                border: "none",
+                boxShadow: "0 4px 15px rgba(184, 144, 71, 0.4)",
+                transition: "all 0.3s ease",
+                letterSpacing: "0.5px",
+                whiteSpace: "nowrap",
+                textDecoration: "none"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 6px 20px rgba(184, 144, 71, 0.6)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 15px rgba(184, 144, 71, 0.4)";
+              }}
+            >
+              <PlayCircle size={18} />
+              <span>Ders Paneli</span>
+            </a>
+
             {user ? (
-              <div style={{ position: "relative" }}>
+              <div style={{ position: "relative" }} className={styles.desktopOnly}>
                 <button
                   className={`${styles.authBtn} ${styles.authBtnOutline}`}
                   onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -133,7 +170,7 @@ export default function Header() {
                   <User size={16} />
                   <span>Merhaba, {user.name}</span>
                 </button>
-                
+              
                 {dropdownOpen && (
                   <div style={{
                     position: "absolute",
@@ -162,7 +199,7 @@ export default function Header() {
                       onClick={() => setDropdownOpen(false)}
                     >
                       <LayoutDashboard size={14} />
-                      <span>{user.role === "ADMIN" ? "Admin Paneli" : "Öğrenci Paneli"}</span>
+                      <span>{user.role === "ADMIN" ? "Admin Paneli" : "Hesabım"}</span>
                     </Link>
                     <button
                       onClick={() => {
@@ -190,10 +227,12 @@ export default function Header() {
                 )}
               </div>
             ) : (
-              <Link href="/auth/login" className={styles.authBtn}>
-                <User size={16} />
-                <span>Öğrenci Girişi</span>
-              </Link>
+              <div className={styles.desktopOnly}>
+                <Link href="/auth/login" className={styles.authBtn}>
+                  <User size={16} />
+                  <span>Öğrenci Girişi</span>
+                </Link>
+              </div>
             )}
           </div>
 
@@ -248,6 +287,9 @@ export default function Header() {
         <div className={styles.mobileActions}>
           {user ? (
             <>
+              <div style={{ padding: "8px 16px", color: "var(--color-primary)", fontWeight: "bold", fontSize: "15px", borderBottom: "1px solid var(--border-color)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                 <User size={16} /> Merhaba, {user.name}
+              </div>
               <Link 
                 href={user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard"}
                 className={`${styles.authBtn} ${styles.authBtnOutline}`}

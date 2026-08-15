@@ -3,10 +3,16 @@ import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic"; // Tüm aktif kursları getir (Forced Recompile)
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const courses = await prisma.course.findMany({
-      where: { isActive: true },
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type");
+
+    let courses = await prisma.course.findMany({
+      where: { 
+        isActive: true,
+        ...(type ? { type } : {})
+      } as any,
       orderBy: [
         { orderIndex: "asc" },
         { createdAt: "desc" }
@@ -14,6 +20,11 @@ export async function GET() {
       include: {
         categories: { select: { id: true, name: true } }
       }
+    });
+
+    // Dinamik URL yönlendirmesi silindi
+    courses = courses.map(course => {
+      return course;
     });
     
     return NextResponse.json({ courses });

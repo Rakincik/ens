@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Key, X, Search, ChevronRight, ArrowUpDown, Filter, Plus } from "lucide-react";
 import { useToast } from "@/contexts/ToastContext";
 import { useRouter } from "next/navigation";
-import { createUser } from "@/app/admin/actions";
 import styles from "@/app/admin/dashboard/admin.module.css";
 
 interface Student {
@@ -291,18 +290,30 @@ export default function StudentsTab() {
             <form onSubmit={async (e) => {
               e.preventDefault();
               setIsSubmittingUser(true);
-              const result = await createUser(newUserForm);
-              if (result.success) {
-                toast.success(result.message);
-                setShowAddUserModal(false);
-                window.location.reload(); 
-              } else {
-                toast.error(result.error);
+              try {
+                const response = await fetch("/api/admin/users", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(newUserForm),
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                  toast.success(data.message || "Kullanıcı başarıyla eklendi.");
+                  setShowAddUserModal(false);
+                  window.location.reload(); 
+                } else {
+                  toast.error(data.error || "Bir hata oluştu.");
+                }
+              } catch (error) {
+                console.error(error);
+                toast.error("İşlem sırasında sunucu ile iletişim kurulamadı.");
+              } finally {
+                setIsSubmittingUser(false);
               }
-              setIsSubmittingUser(false);
             }}>
               <div className={styles.modalBody}>
-                <div style={{ display: "flex", gap: "12px" }}>
+                <div className={styles.formRow}>
                   <div className={styles.formGroup} style={{ flex: 1 }}>
                     <label className={styles.label}>Ad</label>
                     <input className={styles.input} required value={newUserForm.name} onChange={(e) => setNewUserForm({ ...newUserForm, name: e.target.value })} />

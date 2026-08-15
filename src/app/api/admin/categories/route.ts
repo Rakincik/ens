@@ -15,14 +15,21 @@ async function checkAdminAuth() {
   return payload;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type"); // "COURSE" or "PUBLICATION"
+
+    // Typescript'in Prisma cache kalıntıları yüzünden hata vermemesi için
+    const whereClause: any = type ? { type } : undefined;
+
     const categories = await prisma.category.findMany({
+      where: whereClause,
       orderBy: { orderIndex: "asc" }
     });
     return NextResponse.json({ categories });
-  } catch (error) {
-    return NextResponse.json({ error: "Hata oluştu." }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ error: "Hata oluştu: " + error.message }, { status: 500 });
   }
 }
 
@@ -31,11 +38,12 @@ export async function POST(request: Request) {
     const admin = await checkAdminAuth();
     if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
 
-    const { name, orderIndex } = await request.json();
+    const { name, orderIndex, type } = await request.json();
     if (!name) return NextResponse.json({ error: "Kategori adı gerekli" }, { status: 400 });
 
+    const createData: any = { name, orderIndex: orderIndex || 0, type: type || "COURSE" };
     const category = await prisma.category.create({
-      data: { name, orderIndex: orderIndex || 0 }
+      data: createData
     });
     return NextResponse.json({ message: "Başarıyla eklendi", category });
   } catch (error) {

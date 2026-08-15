@@ -7,6 +7,8 @@ import { BookOpen, Search, ShoppingCart, Filter, RotateCcw, CheckCircle } from "
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/contexts/ToastContext";
+import { useAuth } from "@/contexts/AuthContext";
 import styles from "../Home.module.css";
 
 interface Course {
@@ -17,11 +19,14 @@ interface Course {
   originalPrice?: number | null;
   image: string | null;
   isCouponEligible: boolean;
+  paymentLink?: string | null;
   categories?: { id: string; name: string }[];
 }
 
 export default function CoursesPage() {
   const { addToCart } = useCart();
+  const toast = useToast();
+  const { user } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,24 +41,19 @@ export default function CoursesPage() {
       try {
         setLoading(true);
         const [coursesRes, catRes] = await Promise.all([
-          fetch("/api/public/courses"),
-          fetch("/api/public/categories")
+          fetch("/api/public/courses?type=COURSE"),
+          fetch("/api/public/categories?type=COURSE")
         ]);
 
         if (coursesRes.ok) {
           const data = await coursesRes.json();
-          // Sadece eğitimleri göster
-          const onlineOnly = data.courses.filter((c: any) => 
-            !c.categories?.some((cat: any) => cat.name === "Yayınlar" || cat.name === "Kitap")
-          );
-          setCourses(onlineOnly);
+          // type=COURSE olduğu için hepsi eğitim
+          setCourses(data.courses || []);
         }
 
         if (catRes.ok) {
           const catData = await catRes.json();
-          // Yayın/Kitap harici kategoriler
-          const filteredCats = (catData.categories || []).filter((c: any) => c.name !== "Yayınlar" && c.name !== "Kitap");
-          setCategories(filteredCats);
+          setCategories(catData.categories || []);
         }
       } catch (error) {
         console.error("Error loading courses:", error);
@@ -244,7 +244,7 @@ export default function CoursesPage() {
                         
                         <div className={styles.courseContent}>
                           <Link href={`/urun/${course.id}`}>
-                            <h3 className={styles.courseTitle}>{course.title}</h3>
+                            <h3 className={styles.courseTitle} title={course.title}>{course.title}</h3>
                           </Link>
                           <div className={styles.courseDesc}>
                             {course.description ? (() => {
@@ -268,7 +268,8 @@ export default function CoursesPage() {
                                 cleanText = cleanText.replace(/\n+/g, ' ').trim();
                               }
                               
-                              return cleanText;
+                              if (!cleanText || cleanText === '...') return null;
+                              return cleanText.length > 120 ? cleanText.substring(0, 120) + '...' : cleanText;
                             })() : ''}
                           </div>
                           
@@ -288,22 +289,41 @@ export default function CoursesPage() {
                                 <span className={styles.coursePrice}>
                                   ₺{course.price.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                                 </span>
-                                <button
-                                  className={styles.addToCartBtn}
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    addToCart({
-                                      id: course.id,
-                                      title: course.title,
-                                      price: course.price,
-                                      image: null,
-                                      isCouponEligible: course.isCouponEligible
-                                    });
-                                  }}
-                                >
-                                  <ShoppingCart size={16} />
-                                  <span>Sepete Ekle</span>
-                                </button>
+                                {course.paymentLink ? (
+                                  <button
+                                    className={styles.addToCartBtn}
+                                    style={{ backgroundColor: "#198754" }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      if (!user) {
+                                        toast.error("Lütfen satın almadan önce giriş yapın veya kayıt olun.");
+                                        window.location.href = "/auth/login";
+                                      } else {
+                                        window.open(course.paymentLink as string, '_blank');
+                                      }
+                                    }}
+                                  >
+                                    <CheckCircle size={16} />
+                                    <span>Satın Al / Kaydol</span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    className={styles.addToCartBtn}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      addToCart({
+                                        id: course.id,
+                                        title: course.title,
+                                        price: course.price,
+                                        image: course.image,
+                                        isCouponEligible: course.isCouponEligible
+                                      });
+                                    }}
+                                  >
+                                    <ShoppingCart size={16} />
+                                    <span>Sepete Ekle</span>
+                                  </button>
+                                )}
                               </div>
                             </div>
                           </div>

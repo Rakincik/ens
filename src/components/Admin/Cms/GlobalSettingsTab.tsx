@@ -18,7 +18,7 @@ export default function GlobalSettingsTab({ data, onChange, onSave, saving }: Gl
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
         <div>
           <h3 style={{ fontSize: "18px", fontWeight: 700, color: "var(--color-primary)" }}>Genel Site Ayarları</h3>
           <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Sitenin temel bilgilerini, logo ve iletişim kanallarını buradan yönetin.</p>
@@ -32,12 +32,12 @@ export default function GlobalSettingsTab({ data, onChange, onSave, saving }: Gl
         </button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
         {/* LOGO & BRANDING */}
         <div style={{ backgroundColor: "var(--bg-secondary)", padding: "20px", borderRadius: "12px", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "16px" }}>
           <h4 style={{ fontSize: "15px", fontWeight: 700, borderBottom: "1px solid var(--border-color)", paddingBottom: "8px" }}>Marka & Kimlik</h4>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px" }}>
             <ImageUploader 
               label="Ana Logo" 
               value={data?.logoUrl || ""} 
@@ -57,7 +57,7 @@ export default function GlobalSettingsTab({ data, onChange, onSave, saving }: Gl
         <div style={{ backgroundColor: "var(--bg-secondary)", padding: "20px", borderRadius: "12px", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "16px" }}>
           <h4 style={{ fontSize: "15px", fontWeight: 700, borderBottom: "1px solid var(--border-color)", paddingBottom: "8px" }}>İletişim Bilgileri</h4>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
             <div>
               <label style={{ fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "4px" }}>Telefon Numarası</label>
               <input type="text" value={data?.contactPhone || ""} onChange={e => handleChange("contactPhone", e.target.value)} style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid var(--border-color)" }} placeholder="Örn: 0850 123 45 67" />
@@ -78,7 +78,7 @@ export default function GlobalSettingsTab({ data, onChange, onSave, saving }: Gl
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
         {/* SOCIAL MEDIA */}
         <div style={{ backgroundColor: "var(--bg-secondary)", padding: "20px", borderRadius: "12px", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "16px" }}>
           <h4 style={{ fontSize: "15px", fontWeight: 700, borderBottom: "1px solid var(--border-color)", paddingBottom: "8px" }}>Sosyal Medya Linkleri</h4>

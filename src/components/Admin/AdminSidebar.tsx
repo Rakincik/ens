@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Users, BookOpen, Settings, LogOut, ShieldCheck, Menu, Percent, Library, Megaphone, MessageSquare, BarChart3, ListTree, GraduationCap } from "lucide-react";
+import { Users, BookOpen, Settings, LogOut, ShieldCheck, Menu, Percent, Library, Megaphone, MessageSquare, BarChart3, ListTree, GraduationCap, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "@/app/admin/dashboard/admin.module.css";
 
@@ -33,8 +33,15 @@ export default function AdminSidebar({ activeTab, onTabChange, sidebarOpen, setS
 
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.sidebarHeader} style={{ justifyContent: "center", padding: "20px" }}>
+      <div className={styles.sidebarHeader} style={{ justifyContent: "space-between", padding: "20px" }}>
         <img src="/logo.png" alt="Türkçe ÖABT" style={{ height: "45px", objectFit: "contain", cursor: "pointer" }} onClick={() => router.push("/")} />
+        <button 
+          className={styles.mobileCloseBtn}
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Menüyü Kapat"
+        >
+          <X size={24} />
+        </button>
       </div>
 
       <ul className={styles.sidebarMenu}>
@@ -80,7 +87,16 @@ export default function AdminSidebar({ activeTab, onTabChange, sidebarOpen, setS
             onClick={() => { onTabChange("categories"); setSidebarOpen(false); }}
           >
             <ListTree size={18} />
-            <span>Kategori Yönetimi</span>
+            <span>Eğitim Kategorisi Yönetimi</span>
+          </button>
+        </li>
+        <li>
+          <button 
+            className={`${styles.menuBtn} ${activeTab === "publicationCategories" ? styles.menuBtnActive : ""}`}
+            onClick={() => { onTabChange("publicationCategories"); setSidebarOpen(false); }}
+          >
+            <ListTree size={18} />
+            <span>Yayın Kategorisi Yönetimi</span>
           </button>
         </li>
         <li>

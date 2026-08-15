@@ -54,48 +54,68 @@ export default function FacultyPage() {
             ) : (
               <div className={styles.coursesGrid}>
                 {teachers.map((t, index) => (
-                  <div key={index} className={styles.courseCard} style={{ padding: "32px", gap: "16px", textAlign: "center" }}>
+                  <div key={index} className={styles.courseCard} style={{ 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    overflow: "hidden", 
+                    textAlign: "center",
+                    padding: 0
+                  }}>
                     <div style={{
-                      width: "120px",
-                      height: "120px",
-                      borderRadius: "50%",
+                      width: "100%",
+                      aspectRatio: "4 / 5",
                       backgroundColor: "var(--color-primary-light)",
-                      margin: "0 auto 16px auto",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       color: "var(--color-accent)",
-                      border: "2px solid var(--border-color)",
+                      borderBottom: "3px solid var(--color-accent)",
                       overflow: "hidden"
                     }}>
                       {(t as any).image ? (
-                        <img src={(t as any).image} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img 
+                          src={(t as any).image} 
+                          alt={t.name} 
+                          style={{ 
+                            width: "100%", 
+                            height: "100%", 
+                            objectFit: "cover",
+                            objectPosition: "top" // Yüzün görünmesi için genelde top daha iyidir
+                          }} 
+                        />
                       ) : (
-                        <Users size={36} />
+                        <Users size={48} />
                       )}
                     </div>
-                    <h3 style={{ fontSize: "20px", fontWeight: 700 }}>{t.name}</h3>
-                    <h4 style={{ fontSize: "14px", color: "var(--color-accent)", fontWeight: 600 }}>{t.title}</h4>
                     
-                    <div style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      gap: "12px",
-                      fontSize: "12px",
-                      color: "var(--text-muted)",
-                      margin: "8px 0"
-                    }}>
-                      <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                        <GraduationCap size={14} />
-                        <span>Alan Eğitimi</span>
-                      </span>
-                      <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                        <Award size={14} />
-                        <span>10+ Yıl Deneyim</span>
-                      </span>
-                    </div>
+                    <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                      <h3 style={{ fontSize: "20px", fontWeight: 700, margin: 0 }}>{t.name}</h3>
+                      <h4 style={{ fontSize: "14px", color: "var(--color-accent)", fontWeight: 600, margin: 0 }}>{t.title}</h4>
+                      
+                      <div style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "12px",
+                        fontSize: "12px",
+                        color: "var(--text-muted)",
+                        margin: "4px 0"
+                      }}>
+                        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <GraduationCap size={14} />
+                          <span>Alan Uzmanı</span>
+                        </span>
+                        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <Award size={14} />
+                          <span>Deneyimli</span>
+                        </span>
+                      </div>
 
-                    <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.6" }}>{t.bio}</p>
+                      {t.bio && (
+                        <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.6", margin: 0 }}>
+                          {t.bio}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

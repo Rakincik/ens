@@ -24,9 +24,26 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [activeTab, setActiveTab] = useState<"students" | "courses" | "publications" | "coupons" | "influencer" | "cms" | "sales" | "support" | "categories" | "instructors" | string>("sales");
+  const [activeTab, setActiveTab] = useState<"students" | "courses" | "publications" | "coupons" | "influencer" | "cms" | "sales" | "support" | "categories" | "publicationCategories" | "instructors" | string>("sales");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(0);
+
+  // Responsive sidebar handling
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 900) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+    
+    // Set initial state
+    handleResize();
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Fetch unread messages count
   useEffect(() => {
@@ -80,6 +97,14 @@ export default function AdminDashboardPage() {
         setSidebarOpen={setSidebarOpen} 
       />
 
+      {/* MOBILE OVERLAY */}
+      {sidebarOpen && (
+        <div 
+          className={styles.sidebarOverlay} 
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* MAIN VIEW AREA */}
       <div className={styles.mainContent}>
         <header className={styles.topbar}>
@@ -103,7 +128,8 @@ export default function AdminDashboardPage() {
           {activeTab === "students" && <StudentsTab />}
           {activeTab === "courses" && <CoursesTab productType="COURSE" />}
           {activeTab === "publications" && <CoursesTab productType="PUBLICATION" />}
-          {activeTab === "categories" && <CategoriesTab />}
+          {activeTab === "categories" && <CategoriesTab categoryType="COURSE" title="Eğitim Kategorisi Yönetimi" />}
+          {activeTab === "publicationCategories" && <CategoriesTab categoryType="PUBLICATION" title="Yayın Kategorisi Yönetimi" />}
           {activeTab === "instructors" && <InstructorsTab />}
           {activeTab === "coupons" && <CouponsTab isInfluencerMode={false} />}
           {activeTab === "influencer" && <CouponsTab isInfluencerMode={true} />}

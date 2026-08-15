@@ -78,9 +78,9 @@ export default function CmsTab() {
   ];
 
   return (
-    <div style={{ display: "flex", gap: "24px", minHeight: "600px" }}>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "24px", minHeight: "600px" }}>
       {/* SIDEBAR NAVIGATION */}
-      <div style={{ width: "240px", flexShrink: 0, backgroundColor: "#fff", padding: "16px", borderRadius: "12px", boxShadow: "var(--shadow-sm)", display: "flex", flexDirection: "column", gap: "8px" }}>
+      <div style={{ flex: "1 1 240px", minWidth: "240px", maxWidth: "100%", backgroundColor: "#fff", padding: "16px", borderRadius: "12px", boxShadow: "var(--shadow-sm)", display: "flex", flexDirection: "column", gap: "8px" }}>
         <h2 style={{ fontSize: "16px", fontWeight: 700, color: "var(--color-primary)", padding: "8px", marginBottom: "8px", borderBottom: "1px solid var(--border-color)" }}>
           CMS Modülleri
         </h2>
@@ -104,7 +104,7 @@ export default function CmsTab() {
       </div>
 
       {/* MAIN CONTENT AREA */}
-      <div style={{ flex: 1, backgroundColor: "#fff", padding: "32px", borderRadius: "12px", boxShadow: "var(--shadow-sm)" }}>
+      <div style={{ flex: "2 1 400px", maxWidth: "100%", backgroundColor: "#fff", padding: "24px", borderRadius: "12px", boxShadow: "var(--shadow-sm)", overflowX: "hidden" }}>
         {activeTab === "global" && (
           <GlobalSettingsTab 
             data={data.global_settings || {}} 

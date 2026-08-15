@@ -13,15 +13,23 @@ export async function GET(request: Request) {
         where: { key },
       });
       
+      let parsedValue = null;
+      if (setting) {
+        let val = setting.value;
+        parsedValue = JSON.parse(val);
+      }
+      
       return NextResponse.json({
         key,
-        value: setting ? JSON.parse(setting.value) : null,
+        value: parsedValue,
       });
     }
 
     const settings = await prisma.contentSettings.findMany();
     const formattedSettings = settings.reduce((acc: any, current) => {
-      acc[current.key] = JSON.parse(current.value);
+      let val = current.value;
+      
+      acc[current.key] = JSON.parse(val);
       return acc;
     }, {});
 

@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { Save, Loader2, Plus, Trash2, GraduationCap } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Save, Loader2, Plus, Trash2, GraduationCap, Edit, X } from "lucide-react";
+import Image from "next/image";
 import ImageUploader from "./Cms/ImageUploader";
 import DeleteConfirmModal from "./DeleteConfirmModal";
 import { useToast } from "@/contexts/ToastContext";
+import styles from "@/app/admin/dashboard/admin.module.css";
 
 export default function InstructorsTab() {
   const toast = useToast();
@@ -12,9 +14,13 @@ export default function InstructorsTab() {
   const [saving, setSaving] = useState(false);
   const [teachers, setTeachers] = useState<any[]>([]);
   const [fullData, setFullData] = useState<any>({});
-  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   
-  const endOfListRef = useRef<HTMLDivElement>(null);
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [currentTeacher, setCurrentTeacher] = useState<any>({ name: "", title: "", bio: "", image: "" });
+  
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   useEffect(() => {
     fetchSettings();
@@ -62,21 +68,28 @@ export default function InstructorsTab() {
     }
   };
 
-  const handleAddTeacher = () => {
-    setTeachers([...teachers, { name: "", title: "", bio: "", image: "" }]);
-    setTimeout(() => {
-      endOfListRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
+  const openAddModal = () => {
+    setCurrentTeacher({ name: "", title: "", bio: "", image: "" });
+    setEditingIndex(null);
+    setShowModal(true);
   };
 
-  const handleUpdateTeacher = (index: number, field: string, value: string) => {
-    const updated = [...teachers];
-    updated[index] = { ...updated[index], [field]: value };
-    setTeachers(updated);
+  const openEditModal = (index: number) => {
+    setCurrentTeacher({ ...teachers[index] });
+    setEditingIndex(index);
+    setShowModal(true);
   };
 
-  const handleRemoveTeacherClick = (index: number) => {
-    setDeleteIndex(index);
+  const handleModalSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingIndex !== null) {
+      const updated = [...teachers];
+      updated[editingIndex] = currentTeacher;
+      setTeachers(updated);
+    } else {
+      setTeachers([...teachers, currentTeacher]);
+    }
+    setShowModal(false);
   };
 
   const confirmRemoveTeacher = () => {
@@ -97,18 +110,18 @@ export default function InstructorsTab() {
 
   return (
     <div style={{ backgroundColor: "#fff", padding: "24px", borderRadius: "12px", boxShadow: "var(--shadow-sm)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", paddingBottom: "16px", borderBottom: "1px solid var(--border-color)" }}>
+      <div className={styles.tabHeader}>
         <div>
-          <h2 style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-primary)", display: "flex", alignItems: "center", gap: "8px" }}>
+          <h2 style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-primary)", display: "flex", alignItems: "center", gap: "8px", margin: 0 }}>
             <GraduationCap size={24} color="var(--color-accent)" /> Eğitmen Yönetimi
           </h2>
-          <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginTop: "4px" }}>
+          <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginTop: "8px", marginBottom: 0 }}>
             Platformdaki tüm eğitmenleri buradan ekleyebilir, düzenleyebilir veya silebilirsiniz.
           </p>
         </div>
-        <div style={{ display: "flex", gap: "12px" }}>
+        <div className={styles.tabHeaderButtons}>
           <button 
-            onClick={handleAddTeacher}
+            onClick={openAddModal}
             style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 16px", backgroundColor: "var(--color-primary-light)", color: "var(--color-primary)", border: "none", borderRadius: "8px", fontWeight: 600, cursor: "pointer", fontSize: "14px", transition: "all 0.2s" }}
           >
             <Plus size={18} /> Eğitmen Ekle
@@ -123,7 +136,7 @@ export default function InstructorsTab() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))", gap: "24px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "24px" }}>
         {teachers.length === 0 && (
           <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "40px", backgroundColor: "var(--bg-secondary)", borderRadius: "12px", border: "1px dashed var(--border-color)", color: "var(--text-secondary)" }}>
             Henüz eğitmen eklenmemiş. Sağ üstteki "Eğitmen Ekle" butonuna tıklayarak ilk eğitmeni ekleyebilirsiniz.
@@ -131,48 +144,102 @@ export default function InstructorsTab() {
         )}
 
         {teachers.map((teacher: any, i: number) => (
-          <div key={i} style={{ backgroundColor: "var(--bg-secondary)", padding: "24px", borderRadius: "12px", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "16px", transition: "all 0.2s" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "12px" }}>
-              <span style={{ fontWeight: 700, color: "var(--color-primary)", fontSize: "15px", display: "flex", alignItems: "center", gap: "6px" }}>
-                <span style={{ backgroundColor: "var(--color-primary-light)", width: "24px", height: "24px", display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", fontSize: "12px" }}>{i + 1}</span>
-                Eğitmen
-              </span>
-              <button onClick={() => handleRemoveTeacherClick(i)} style={{ background: "transparent", border: "none", color: "var(--color-error)", cursor: "pointer", padding: "6px", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }} title="Sil"><Trash2 size={18}/></button>
+          <div key={i} style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "12px", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "16px", boxShadow: "0 2px 4px rgba(0,0,0,0.02)", transition: "all 0.2s" }}>
+            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+              {teacher.image ? (
+                <div style={{ width: "64px", height: "64px", borderRadius: "50%", overflow: "hidden", border: "2px solid #f1f5f9", position: "relative", flexShrink: 0 }}>
+                  <Image src={teacher.image} alt={teacher.name || "Eğitmen"} fill style={{ objectFit: "cover" }} sizes="64px" />
+                </div>
+              ) : (
+                <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "var(--bg-secondary)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", flexShrink: 0 }}>
+                  <GraduationCap size={28} />
+                </div>
+              )}
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "var(--color-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {teacher.name || "İsimsiz Eğitmen"}
+                </h4>
+                <p style={{ margin: 0, fontSize: "13px", color: "var(--text-secondary)", marginTop: "4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {teacher.title || "Branş belirtilmedi"}
+                </p>
+              </div>
             </div>
             
-            <ImageUploader 
-              label="Eğitmen Fotoğrafı" 
-              value={teacher.image || ""} 
-              onChange={(url) => handleUpdateTeacher(i, "image", url)} 
-              recommendedSize="Kare Format (Örn: 400x400px)" 
-            />
+            <p style={{ margin: 0, fontSize: "13px", color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", flex: 1 }}>
+              {teacher.bio || "Biyografi eklenmemiş."}
+            </p>
             
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div>
-                <label style={{ fontSize: "13px", fontWeight: 600, marginBottom: "6px", display: "block", color: "var(--text-primary)" }}>İsim Soyisim</label>
-                <input type="text" value={teacher.name} onChange={e => handleUpdateTeacher(i, "name", e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--border-color)", fontSize: "14px" }} placeholder="Örn: Rüstem Hoca" />
-              </div>
-              <div>
-                <label style={{ fontSize: "13px", fontWeight: 600, marginBottom: "6px", display: "block", color: "var(--text-primary)" }}>Branş / Ünvan</label>
-                <input type="text" value={teacher.title} onChange={e => handleUpdateTeacher(i, "title", e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--border-color)", fontSize: "14px" }} placeholder="Örn: Dil Bilgisi Uzmanı" />
-              </div>
-              <div>
-                <label style={{ fontSize: "13px", fontWeight: 600, marginBottom: "6px", display: "block", color: "var(--text-primary)" }}>Biyografi / Detay</label>
-                <textarea value={teacher.bio} onChange={e => handleUpdateTeacher(i, "bio", e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--border-color)", minHeight: "100px", resize: "vertical", fontSize: "14px" }} placeholder="Eğitmen hakkında kısa açıklama..." />
-              </div>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "auto", paddingTop: "16px", borderTop: "1px solid var(--border-color)" }}>
+              <button type="button" onClick={() => openEditModal(i)} className={`${styles.iconBtn} ${styles.iconBtnMove}`} title="Düzenle">
+                <Edit size={18} />
+              </button>
+              <button type="button" onClick={() => setDeleteIndex(i)} className={`${styles.iconBtn} ${styles.iconBtnDelete}`} title="Sil">
+                <Trash2 size={18} />
+              </button>
             </div>
           </div>
         ))}
-        <div ref={endOfListRef} />
       </div>
+
+      {/* POPUP (MODAL) */}
+      {showModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowModal(false)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>
+                {editingIndex !== null ? "Eğitmeni Düzenle" : "Yeni Eğitmen Ekle"}
+              </h3>
+              <button type="button" className={styles.modalCloseBtn} onClick={() => setShowModal(false)}>
+                <X size={18} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleModalSave}>
+              <div className={styles.modalBody}>
+                <div style={{ marginBottom: "24px" }}>
+                  <ImageUploader 
+                    label="Eğitmen Fotoğrafı" 
+                    value={currentTeacher.image || ""} 
+                    onChange={(url) => setCurrentTeacher({ ...currentTeacher, image: url })} 
+                    recommendedSize="Sistem otomatik optimize eder (Sınır yok)" 
+                  />
+                </div>
+                
+                <div className={styles.formGroup} style={{ marginBottom: "16px" }}>
+                  <label className={styles.label} style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px", display: "block" }}>İsim Soyisim</label>
+                  <input type="text" className={styles.premiumInput} value={currentTeacher.name} onChange={e => setCurrentTeacher({ ...currentTeacher, name: e.target.value })} placeholder="Örn: Rüstem Hoca" required />
+                </div>
+                
+                <div className={styles.formGroup} style={{ marginBottom: "16px" }}>
+                  <label className={styles.label} style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px", display: "block" }}>Branş / Ünvan</label>
+                  <input type="text" className={styles.premiumInput} value={currentTeacher.title} onChange={e => setCurrentTeacher({ ...currentTeacher, title: e.target.value })} placeholder="Örn: Dil Bilgisi Uzmanı" required />
+                </div>
+                
+                <div className={styles.formGroup} style={{ marginBottom: "16px" }}>
+                  <label className={styles.label} style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "8px", display: "block" }}>Biyografi / Detay</label>
+                  <textarea className={styles.premiumInput} value={currentTeacher.bio} onChange={e => setCurrentTeacher({ ...currentTeacher, bio: e.target.value })} placeholder="Eğitmen hakkında kısa açıklama..." style={{ minHeight: "100px", resize: "vertical" }} />
+                </div>
+              </div>
+              
+              <div className={styles.modalFooter}>
+                <button type="button" className={`${styles.btn} ${styles.btnOutline}`} onClick={() => setShowModal(false)}>İptal</button>
+                <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`}>
+                  {editingIndex !== null ? "Güncelle" : "Ekle"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <DeleteConfirmModal
         isOpen={deleteIndex !== null}
         onClose={() => setDeleteIndex(null)}
         onConfirm={confirmRemoveTeacher}
         title="Eğitmeni Sil"
-        message={`Bu eğitmeni (${deleteIndex !== null && teachers[deleteIndex] ? teachers[deleteIndex].name || (deleteIndex + 1) + ". Eğitmen" : ""}) listeden kaldırmak istediğinize emin misiniz? (Değişikliklerin kalıcı olması için sağ üstten kaydetmelisiniz.)`}
+        message={`Bu eğitmeni listeden kaldırmak istediğinize emin misiniz? (Değişikliklerin kalıcı olması için sağ üstten kaydetmelisiniz.)`}
       />
     </div>
   );
 }
+

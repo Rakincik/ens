@@ -8,6 +8,7 @@ import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/contexts/ToastContext";
+import { useAuth } from "@/contexts/AuthContext";
 import styles from "../urun.module.css";
 
 interface Course {
@@ -19,15 +20,17 @@ interface Course {
   isActive: boolean;
   image: string | null;
   isCouponEligible: boolean;
+  paymentLink?: string | null;
   features?: string[];
 }
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
-  const id = resolvedParams.id;
+  const unwrappedParams = use(params);
+  const id = unwrappedParams.id;
 
   const { addToCart } = useCart();
   const toast = useToast();
+  const { user } = useAuth();
 
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
@@ -124,9 +127,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           {/* Product Sheet Layout (Matching Live Site) */}
           <div className={styles.layout}>
             {/* LEFT SIDE: Description and Details */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "32px", minWidth: 0, flex: 1 }}>
               <div>
-                <div className={styles.description} style={{ wordWrap: "break-word", overflowWrap: "anywhere", maxWidth: "100%", overflowX: "hidden", fontSize: "15px", lineHeight: "1.8", color: "var(--text-primary)" }} dangerouslySetInnerHTML={{ __html: course.description }} />
+                <div 
+                  className={styles.description} 
+                  style={{ maxWidth: "100%", fontSize: "15px", lineHeight: "1.5", color: "var(--text-primary)", wordBreak: "normal", overflowWrap: "normal" }} 
+                  dangerouslySetInnerHTML={{ 
+                    __html: (course.description || "").replace(/&nbsp;/g, ' ')
+                  }} 
+                />
               </div>
             </div>
 
@@ -141,9 +150,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   <BookOpen size={48} color="var(--color-accent)" />
                 </div>
               )}
-              
+
               <h3 style={{ fontSize: "18px", fontWeight: 800, color: "var(--color-primary)", marginBottom: "24px", textAlign: "center", lineHeight: "1.4" }}>{course.title}</h3>
-              
+
               <div style={{ backgroundColor: "#fff", borderRadius: "12px", padding: "16px", border: "1px solid var(--border-color)", marginBottom: "24px", textAlign: "center" }}>
                 {course.originalPrice && course.originalPrice > course.price ? (
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", marginBottom: "8px" }}>
@@ -155,35 +164,54 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </span>
                   </div>
                 ) : (
-                   <div style={{ fontSize: "28px", fontWeight: 900, color: "#198754", lineHeight: 1, marginBottom: "8px" }}>
-                      ₺{course.price.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
-                   </div>
+                  <div style={{ fontSize: "28px", fontWeight: 900, color: "#198754", lineHeight: 1, marginBottom: "8px" }}>
+                    ₺{course.price.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
+                  </div>
                 )}
-                
+
                 {course.originalPrice && course.originalPrice > course.price && (
-                   <div style={{ backgroundColor: "#ffc107", color: "#000", padding: "4px 8px", borderRadius: "4px", fontSize: "12px", fontWeight: "bold", display: "inline-block" }}>
-                      %{Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)} İndirim
-                   </div>
+                  <div style={{ backgroundColor: "#ffc107", color: "#000", padding: "4px 8px", borderRadius: "4px", fontSize: "12px", fontWeight: "bold", display: "inline-block" }}>
+                    %{Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)} İndirim
+                  </div>
                 )}
               </div>
 
-              <button 
-                className={styles.addToCartBtn}
-                onClick={() => addToCart({
-                  id: course.id,
-                  title: course.title,
-                  price: course.price,
-                  image: course.image || null,
-                  isCouponEligible: course.isCouponEligible
-                })}
-                style={{ width: "100%", padding: "16px", fontSize: "16px", borderRadius: "var(--radius-md)", backgroundColor: "#be1e2d", color: "#fff", border: "none", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", fontWeight: "bold" }}
-              >
-                Hemen Satın Al
-              </button>
-              
+              {course.paymentLink ? (
+                <button
+                  className={styles.addToCartBtn}
+                  onClick={() => {
+                    if (!user) {
+                      toast.error("Lütfen satın almadan önce giriş yapın veya kayıt olun.");
+                      window.location.href = "/auth/login";
+                    } else {
+                      window.open(course.paymentLink as string, '_blank');
+                    }
+                  }}
+                  style={{ width: "100%", padding: "16px", fontSize: "16px", borderRadius: "var(--radius-md)", backgroundColor: "#198754", color: "#fff", border: "none", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", fontWeight: "bold" }}
+                >
+                  <CheckCircle size={20} />
+                  Hemen Satın Al / Kaydol
+                </button>
+              ) : (
+                <button
+                  className={styles.addToCartBtn}
+                  onClick={() => addToCart({
+                    id: course.id,
+                    title: course.title,
+                    price: course.price,
+                    image: course.image || null,
+                    isCouponEligible: course.isCouponEligible
+                  })}
+                  style={{ width: "100%", padding: "16px", fontSize: "16px", borderRadius: "var(--radius-md)", backgroundColor: "#be1e2d", color: "#fff", border: "none", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", fontWeight: "bold" }}
+                >
+                  <ShoppingCart size={20} />
+                  Sepete Ekle
+                </button>
+              )}
+
               <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginTop: "16px", fontSize: "13px", color: "var(--text-secondary)" }}>
-                 <span style={{ cursor: "pointer" }}><i className="fa-solid fa-share-nodes"></i> Paylaş</span>
-                 <span style={{ cursor: "pointer" }}><i className="fa-regular fa-heart"></i> İstek Listesi</span>
+                <span style={{ cursor: "pointer" }}><i className="fa-solid fa-share-nodes"></i> Paylaş</span>
+                <span style={{ cursor: "pointer" }}><i className="fa-regular fa-heart"></i> İstek Listesi</span>
               </div>
             </div>
           </div>
