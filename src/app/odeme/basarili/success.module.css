@@ -59,3 +59,114 @@
   background-color: var(--color-primary-dark);
   transform: translateY(-2px);
 }
+
+/* Modal Popup Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(30, 41, 59, 0.7); /* Slate/Antrasit overlay with opacity */
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-out;
+  padding: 20px;
+}
+
+.modal {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 36px;
+  max-width: 550px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid rgba(184, 144, 71, 0.2);
+  animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modalIcon {
+  color: var(--color-success);
+  margin-bottom: 20px;
+}
+
+.modalTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 16px;
+}
+
+.modalText {
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: 28px;
+  text-align: left;
+  background-color: #faf9f6; /* Warm White */
+  border-left: 4px solid var(--color-primary);
+  padding: 16px;
+  border-radius: 0 8px 8px 0;
+}
+
+.modalLink {
+  color: var(--color-primary);
+  font-weight: 700;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.modalButtonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modalButtonPrimary {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modalButtonPrimary:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+}
+
+.modalButtonSecondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modalButtonSecondary:hover {
+  background-color: #f8fafc;
+  color: var(--text-primary);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+

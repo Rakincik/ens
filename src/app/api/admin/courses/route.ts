@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Yetkisiz erişim." }, { status: 403 });
     }
 
-    const { title, description, price, originalPrice, isActive, image, isCouponEligible, categoryIds, orderIndex, type, features, paymentLink } = await request.json();
+    const { title, description, price, originalPrice, isActive, image, isCouponEligible, categoryIds, orderIndex, type, features, paymentLink, muroGroupId } = await request.json();
 
     if (!title || !description || price === undefined) {
       return NextResponse.json(
@@ -84,7 +84,8 @@ export async function POST(request: Request) {
         orderIndex: orderIndex !== undefined ? parseInt(orderIndex) : 0,
         type: type || "COURSE",
         features: Array.isArray(features) ? features : [],
-        paymentLink: paymentLink || null
+        paymentLink: paymentLink || null,
+        muroGroupId: muroGroupId || null
       }
     });
 
@@ -109,7 +110,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Yetkisiz erişim." }, { status: 403 });
     }
 
-    const { id, title, description, price, originalPrice, isActive, image, isCouponEligible, categoryIds, orderIndex, type, features, paymentLink } = await request.json();
+    const { id, title, description, price, originalPrice, isActive, image, isCouponEligible, categoryIds, orderIndex, type, features, paymentLink, muroGroupId } = await request.json();
 
     if (!id) {
       return NextResponse.json(
@@ -136,7 +137,8 @@ export async function PUT(request: Request) {
         ...(orderIndex !== undefined && { orderIndex: parseInt(orderIndex) }),
         ...(type !== undefined && { type }),
         ...(features !== undefined && { features: Array.isArray(features) ? features : [] }),
-        ...(paymentLink !== undefined && { paymentLink })
+        ...(paymentLink !== undefined && { paymentLink }),
+        ...(muroGroupId !== undefined && { muroGroupId: muroGroupId || null })
       }
     });
 

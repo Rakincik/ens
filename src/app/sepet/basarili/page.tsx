@@ -24,9 +24,9 @@ export default function PaymentSuccessPage() {
           <div className={`${styles.statusIconWrapper} styles.successIcon`}>
             <CheckCircle2 size={48} style={{ color: "var(--color-success)" }} />
           </div>
-          
+
           <h1 className={styles.statusTitle}>Ödemeniz Başarıyla Alındı!</h1>
-          
+
           <p className={styles.statusDesc}>
             Türkçe ÖABT eğitim paketiniz hesabınıza tanımlanmıştır. Satın aldığınız paketlere öğrenci panelinizden hemen erişebilirsiniz. Başarılar dileriz!
           </p>

@@ -22,6 +22,7 @@ interface Course {
   isCouponEligible: boolean;
   orderIndex: number;
   paymentLink?: string | null;
+  muroGroupId?: string | null;
   categoryId?: string | null;
   category?: { name: string } | null;
   categories?: { id: string; name: string }[] | null;
@@ -267,7 +268,7 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
         <button
           className={styles.btn}
           onClick={() => {
-            setSelectedCourse({ title: "", description: "", price: 0, originalPrice: null, isActive: true, isCouponEligible: true, image: null, orderIndex: 0, categoryIds: [], type: productType, paymentLink: null });
+            setSelectedCourse({ title: "", description: "", price: 0, originalPrice: null, isActive: true, isCouponEligible: true, image: null, orderIndex: 0, categoryIds: [], type: productType, paymentLink: null, muroGroupId: "" });
             setIsCategoryDropdownOpen(false);
             setShowCourseModal(true);
           }}
@@ -350,7 +351,7 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                                     className={`${styles.btn} ${styles.btnOutline}`}
                                     style={{ padding: "6px" }}
                                     onClick={() => {
-                                      setSelectedCourse({ ...course, categoryIds: course.categories?.map((c: any) => c.id) || [], features: course.features || [] });
+                                      setSelectedCourse({ ...course, categoryIds: course.categories?.map((c: any) => c.id) || [], features: course.features || [], muroGroupId: course.muroGroupId || "" });
                                       setIsCategoryDropdownOpen(false);
                                       setShowCourseModal(true);
                                     }}
@@ -527,6 +528,17 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                           style={{ fontSize: "16px", padding: "14px 16px" }}
                         />
                       </div>
+                    </div>
+
+                    <div className={styles.formGroup} style={{ marginTop: "16px" }}>
+                      <label className={styles.label}>Muro Grup ID (Öğrenci Tanımlanacak Muro Grubu)</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        placeholder="Örn: 24b1dfa4-..."
+                        value={selectedCourse.muroGroupId || ""}
+                        onChange={(e) => setSelectedCourse({ ...selectedCourse, muroGroupId: e.target.value })}
+                      />
                     </div>
 
                     <div className={styles.formGroup} style={{ marginTop: "16px" }}>
