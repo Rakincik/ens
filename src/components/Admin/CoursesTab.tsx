@@ -46,6 +46,9 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
   const [showCourseModal, setShowCourseModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Partial<Course> | null>(null);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [muroGroups, setMuroGroups] = useState<{ id: string; name: string }[]>([]);
+  const [muroGroupsError, setMuroGroupsError] = useState<string | null>(null);
+  const [isMuroDropdownOpen, setIsMuroDropdownOpen] = useState(false);
   const [isSavingCourse, setIsSavingCourse] = useState(false);
   const [newFeature, setNewFeature] = useState("");
   const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
@@ -117,9 +120,10 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
   async function loadCourses() {
     try {
       setLoading(true);
-      const [coursesRes, catRes] = await Promise.all([
+      const [coursesRes, catRes, muroRes] = await Promise.all([
         fetch(`/api/admin/courses?type=${productType}`),
-        fetch("/api/admin/categories")
+        fetch("/api/admin/categories"),
+        fetch("/api/admin/muro-groups").catch(() => null)
       ]);
 
       if (coursesRes.ok) {
@@ -132,6 +136,18 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
       if (catRes.ok) {
         const catData = await catRes.json();
         setCategories(catData.categories || []);
+      }
+
+      if (muroRes && muroRes.ok) {
+        const muroData = await muroRes.json();
+        setMuroGroups(muroData.groups || []);
+        if (muroData.error) {
+          setMuroGroupsError(muroData.error);
+        } else {
+          setMuroGroupsError(null);
+        }
+      } else {
+        setMuroGroupsError("Muro grupları yüklenemedi veya veritabanı bağlantısı kurulamadı.");
       }
     } catch (err) {
       console.error(err);
@@ -270,6 +286,7 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
           onClick={() => {
             setSelectedCourse({ title: "", description: "", price: 0, originalPrice: null, isActive: true, isCouponEligible: true, image: null, orderIndex: 0, categoryIds: [], type: productType, paymentLink: null, muroGroupId: "" });
             setIsCategoryDropdownOpen(false);
+            setIsMuroDropdownOpen(false);
             setShowCourseModal(true);
           }}
         >
@@ -353,6 +370,7 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                                     onClick={() => {
                                       setSelectedCourse({ ...course, categoryIds: course.categories?.map((c: any) => c.id) || [], features: course.features || [], muroGroupId: course.muroGroupId || "" });
                                       setIsCategoryDropdownOpen(false);
+                                      setIsMuroDropdownOpen(false);
                                       setShowCourseModal(true);
                                     }}
                                     aria-label="Düzenle"
@@ -531,14 +549,83 @@ export default function CoursesTab({ productType = "COURSE" }: { productType?: "
                     </div>
 
                     <div className={styles.formGroup} style={{ marginTop: "16px" }}>
-                      <label className={styles.label}>Muro Grup ID (Öğrenci Tanımlanacak Muro Grubu)</label>
-                      <input
-                        type="text"
-                        className={styles.input}
-                        placeholder="Örn: 24b1dfa4-..."
-                        value={selectedCourse.muroGroupId || ""}
-                        onChange={(e) => setSelectedCourse({ ...selectedCourse, muroGroupId: e.target.value })}
-                      />
+                      <label className={styles.label}>Muro Grupları (Öğrenci Tanımlanacak Gruplar)</label>
+                      {muroGroups.length > 0 ? (
+                        <div style={{ position: "relative" }}>
+                          <button
+                            type="button"
+                            className={styles.input}
+                            style={{ width: "100%", textAlign: "left", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#fff" }}
+                            onClick={() => setIsMuroDropdownOpen(!isMuroDropdownOpen)}
+                          >
+                            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {(() => {
+                                const selectedIds = selectedCourse?.muroGroupId
+                                  ? selectedCourse.muroGroupId.split(",").map((id: string) => id.trim()).filter(Boolean)
+                                  : [];
+                                return selectedIds.length > 0
+                                  ? `${selectedIds.length} Muro Grubu Seçildi`
+                                  : "Muro Grubu Seçin";
+                              })()}
+                            </span>
+                            <span style={{ fontSize: "10px", transform: isMuroDropdownOpen ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>▼</span>
+                          </button>
+
+                          {isMuroDropdownOpen && (
+                            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "4px", zIndex: 100, display: "flex", flexDirection: "column", gap: "2px", maxHeight: "200px", overflowY: "auto", border: "1px solid var(--border-color)", borderRadius: "8px", background: "#fff", padding: "4px", boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)" }}>
+                              {muroGroups.map(g => {
+                                const selectedIds = selectedCourse?.muroGroupId
+                                  ? selectedCourse.muroGroupId.split(",").map((id: string) => id.trim()).filter(Boolean)
+                                  : [];
+                                const isSelected = selectedIds.includes(g.id);
+                                return (
+                                  <label key={g.id} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", background: isSelected ? "rgba(184, 144, 71, 0.08)" : "transparent", color: isSelected ? "var(--color-primary)" : "var(--text-primary)", padding: "8px 12px", borderRadius: "6px", fontSize: "14px", transition: "background 0.2s", fontWeight: isSelected ? 600 : 400 }}>
+                                    <input
+                                      type="checkbox"
+                                      style={{ width: "16px", height: "16px", accentColor: "var(--color-primary)", cursor: "pointer" }}
+                                      checked={isSelected}
+                                      onChange={(e) => {
+                                        let newIds = [...selectedIds];
+                                        if (e.target.checked) {
+                                          if (!newIds.includes(g.id)) {
+                                            newIds.push(g.id);
+                                          }
+                                        } else {
+                                          newIds = newIds.filter((id: string) => id !== g.id);
+                                        }
+                                        if (selectedCourse) {
+                                          setSelectedCourse({ ...selectedCourse, muroGroupId: newIds.join(",") });
+                                        }
+                                      }}
+                                    />
+                                    {g.name}
+                                  </label>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div>
+                          {muroGroupsError && (
+                            <div style={{ fontSize: "12px", color: "#b89047", marginBottom: "8px", padding: "8px 12px", backgroundColor: "rgba(184, 144, 71, 0.05)", borderRadius: "6px", border: "1px solid rgba(184, 144, 71, 0.15)", display: "flex", flexDirection: "column", gap: "4px" }}>
+                              <span style={{ fontWeight: 600 }}>Not: {muroGroupsError}</span>
+                              <span>Muro veritabanı bağlantısı kurulamadığından manuel ID giriş moduna geçilmiştir. Çoklu atama için ID'leri virgülle ayırarak yazabilirsiniz.</span>
+                            </div>
+                          )}
+                          <input
+                            type="text"
+                            className={styles.input}
+                            placeholder="Örn: 24b1dfa4-..., 5ef12ba2-..."
+                            value={selectedCourse?.muroGroupId || ""}
+                            onChange={(e) => {
+                              if (selectedCourse) {
+                                setSelectedCourse({ ...selectedCourse, muroGroupId: e.target.value });
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div className={styles.formGroup} style={{ marginTop: "16px" }}>

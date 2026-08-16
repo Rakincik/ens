@@ -77,94 +77,98 @@ export async function POST(req: Request) {
             
             for (const item of orderWithItems.orderItems) {
               const course = item.course;
-              const muroGroupId = course.muroGroupId;
+              const muroGroupIdRaw = course.muroGroupId;
 
-              if (muroGroupId) {
-                console.log(`Kurs (${course.title}) için Muro Grup ID bulundu: ${muroGroupId}`);
+              if (muroGroupIdRaw) {
+                const muroGroupIds = muroGroupIdRaw.split(",").map(id => id.trim()).filter(Boolean);
                 
-                const email = (user.email || "").trim().toLowerCase();
-                
-                // 1. Kullanıcı Muro'da var mı?
-                const userRes = await muroPool.query(
-                  'SELECT "Id" FROM "Users" WHERE LOWER("Email") = $1 LIMIT 1',
-                  [email]
-                );
-
-                let muroUserId: string;
-
-                if (userRes.rows.length > 0) {
-                  muroUserId = userRes.rows[0].Id || userRes.rows[0].id;
-                  console.log(`Kullanıcı zaten Muro sisteminde kayıtlı. UserID: ${muroUserId}`);
-                } else {
-                  // Kullanıcı yoksa yeni kayıt oluştur
-                  // Şifre kuralı: soyadı + telefonun son 2 hanesi (tümü küçük harf, Türkçe karakterler temizlenmiş)
-                  const rawSurname = (user.surname || "").trim().toLowerCase();
-                  const cleanSurname = rawSurname
-                    .replace(/ı/g, 'i')
-                    .replace(/ğ/g, 'g')
-                    .replace(/ü/g, 'u')
-                    .replace(/ş/g, 's')
-                    .replace(/ö/g, 'o')
-                    .replace(/ç/g, 'c');
-
-                  const rawPhone = (user.phone || "").trim().replace(/\D/g, "");
-                  const phoneLastTwo = rawPhone.length >= 2 ? rawPhone.slice(-2) : "00";
-                  const plainPassword = cleanSurname + phoneLastTwo;
+                for (const muroGroupId of muroGroupIds) {
+                  console.log(`Kurs (${course.title}) için Muro Grup ID bulundu: ${muroGroupId}`);
                   
-                  const newUserId = crypto.randomUUID();
-                  const username = email.split("@")[0] || email;
-
-                  console.log(`Yeni Muro kullanıcısı oluşturuluyor. Şifre kuralı: ${plainPassword}`);
-
-                  await muroPool.query(
-                    `INSERT INTO "Users" (
-                      "Id", "FirstName", "LastName", "Email", "Username", 
-                      "Phone", "PasswordHash", "Role", "IsActive", 
-                      "CreatedAt", "IsDeleted", "FailedLoginCount"
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10, $11)`,
-                    [
-                      newUserId,
-                      user.name || "",
-                      user.surname || "",
-                      email,
-                      username,
-                      user.phone || null,
-                      plainPassword, // Plain text şifre (sakın şifreleme dendi)
-                      2, // Student = 2
-                      true, // IsActive = true
-                      false, // IsDeleted = false
-                      0 // FailedLoginCount = 0
-                    ]
+                  const email = (user.email || "").trim().toLowerCase();
+                  
+                  // 1. Kullanıcı Muro'da var mı?
+                  const userRes = await muroPool.query(
+                    'SELECT "Id" FROM "Users" WHERE LOWER("Email") = $1 LIMIT 1',
+                    [email]
                   );
 
-                  muroUserId = newUserId;
-                  console.log(`Yeni kullanıcı Muro veritabanına eklendi. UserID: ${muroUserId}`);
-                }
+                  let muroUserId: string;
 
-                // 2. Kullanıcı bu gruba zaten üye mi?
-                const memberRes = await muroPool.query(
-                  'SELECT "Id" FROM "GroupMembers" WHERE "UserId" = $1 AND "GroupId" = $2 LIMIT 1',
-                  [muroUserId, muroGroupId]
-                );
+                  if (userRes.rows.length > 0) {
+                    muroUserId = userRes.rows[0].Id || userRes.rows[0].id;
+                    console.log(`Kullanıcı zaten Muro sisteminde kayıtlı. UserID: ${muroUserId}`);
+                  } else {
+                    // Kullanıcı yoksa yeni kayıt oluştur
+                    // Şifre kuralı: soyadı + telefonun son 2 hanesi (tümü küçük harf, Türkçe karakterler temizlenmiş)
+                    const rawSurname = (user.surname || "").trim().toLowerCase();
+                    const cleanSurname = rawSurname
+                      .replace(/ı/g, 'i')
+                      .replace(/ğ/g, 'g')
+                      .replace(/ü/g, 'u')
+                      .replace(/ş/g, 's')
+                      .replace(/ö/g, 'o')
+                      .replace(/ç/g, 'c');
 
-                if (memberRes.rows.length > 0) {
-                  console.log(`Kullanıcı zaten Muro grubuna (${muroGroupId}) üye.`);
-                } else {
-                  // Gruba atamasını yap
-                  const newMemberId = crypto.randomUUID();
-                  await muroPool.query(
-                    `INSERT INTO "GroupMembers" (
-                      "Id", "UserId", "GroupId", "Role", "Status", "AddedAt"
-                    ) VALUES ($1, $2, $3, $4, $5, NOW())`,
-                    [
-                      newMemberId,
-                      muroUserId,
-                      muroGroupId,
-                      2, // Student = 2
-                      "active"
-                    ]
+                    const rawPhone = (user.phone || "").trim().replace(/\D/g, "");
+                    const phoneLastTwo = rawPhone.length >= 2 ? rawPhone.slice(-2) : "00";
+                    const plainPassword = cleanSurname + phoneLastTwo;
+                    
+                    const newUserId = crypto.randomUUID();
+                    const username = email.split("@")[0] || email;
+
+                    console.log(`Yeni Muro kullanıcısı oluşturuluyor. Şifre kuralı: ${plainPassword}`);
+
+                    await muroPool.query(
+                      `INSERT INTO "Users" (
+                        "Id", "FirstName", "LastName", "Email", "Username", 
+                        "Phone", "PasswordHash", "Role", "IsActive", 
+                        "CreatedAt", "IsDeleted", "FailedLoginCount"
+                      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10, $11)`,
+                      [
+                        newUserId,
+                        user.name || "",
+                        user.surname || "",
+                        email,
+                        username,
+                        user.phone || null,
+                        plainPassword, // Plain text şifre (sakın şifreleme dendi)
+                        2, // Student = 2
+                        true, // IsActive = true
+                        false, // IsDeleted = false
+                        0 // FailedLoginCount = 0
+                      ]
+                    );
+
+                    muroUserId = newUserId;
+                    console.log(`Yeni kullanıcı Muro veritabanına eklendi. UserID: ${muroUserId}`);
+                  }
+
+                  // 2. Kullanıcı bu gruba zaten üye mi?
+                  const memberRes = await muroPool.query(
+                    'SELECT "Id" FROM "GroupMembers" WHERE "UserId" = $1 AND "GroupId" = $2 LIMIT 1',
+                    [muroUserId, muroGroupId]
                   );
-                  console.log(`Kullanıcı Muro grubuna (${muroGroupId}) başarıyla atandı.`);
+
+                  if (memberRes.rows.length > 0) {
+                    console.log(`Kullanıcı zaten Muro grubuna (${muroGroupId}) üye.`);
+                  } else {
+                    // Gruba atamasını yap
+                    const newMemberId = crypto.randomUUID();
+                    await muroPool.query(
+                      `INSERT INTO "GroupMembers" (
+                        "Id", "UserId", "GroupId", "Role", "Status", "AddedAt"
+                      ) VALUES ($1, $2, $3, $4, $5, NOW())`,
+                      [
+                        newMemberId,
+                        muroUserId,
+                        muroGroupId,
+                        2, // Student = 2
+                        "active"
+                      ]
+                    );
+                    console.log(`Kullanıcı Muro grubuna (${muroGroupId}) başarıyla atandı.`);
+                  }
                 }
               }
             }
